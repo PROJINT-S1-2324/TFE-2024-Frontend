@@ -1,148 +1,261 @@
-import React, { useState, useEffect } from 'react';
-import {Link, useLocation} from 'react-router-dom';
+import React from 'react';
+import moment from "moment-timezone";
+import Datetime from "react-datetime";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { Col, Row, Card, Form, Container, InputGroup } from '@themesberg/react-bootstrap';
 
+import Documentation from "../../components/Documentation";
 
-const User = () => {
-    const location = useLocation();
-    const [userData, setUserData] = useState({
-        lastName: '',
-        firstName: '',
-        email: '',
-        role: '',
-        language: '',
-        locale: '',
-        status: ''
-    });
-    const [editing, setEditing] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [showUserData, setShowUserData] = useState(true); // Afficher les données de l'utilisateur par défaut
+export default () => {
+  return (
+    <article>
+      <Container className="px-0">
+        <Row className="d-flex flex-wrap flex-md-nowrap align-items-center py-4">
+          <Col className="d-block mb-4 mb-md-0">
+            <h1 className="h2">Forms</h1>
+            <p className="mb-0">
+              Use form elements such as text inputs, textareas, file uploads and many more to get input from you users.
+            </p>
+          </Col>
+        </Row>
 
-    useEffect(() => {
-        setUserData({
-            lastName: localStorage.getItem('lastName'),
-            firstName: localStorage.getItem('firstName'),
-            email: localStorage.getItem('email'),
-            role: localStorage.getItem('role'),
-            language: localStorage.getItem('language'),
-            locale: localStorage.getItem('locale'),
-            status: localStorage.getItem('status')
-        });
-    }, [location]);
+        <Documentation
+          title="Example"
+          description={
+            <p>Form elements are an important part of the UI to receive text input from the users. The <code>&#x3C;Form&#x3E;</code> component can be used to create forms, form groups, labels, and input elements inside the UI. Check out the following example for a simple email input field and a textarea field:</p>
+          }
+          scope={{ Form }}
+          imports={`import { Form } from '@themesberg/react-bootstrap';`}
+          example={`<Form>
+  <Form.Group className="mb-3">
+    <Form.Label>Email address</Form.Label>
+    <Form.Control type="email" placeholder="name@example.com" />
+  </Form.Group>
+  <Form.Group className="mb-3">
+    <Form.Label>Example textarea</Form.Label>
+    <Form.Control as="textarea" rows="3" />
+  </Form.Group>
+</Form>`}
+        />
 
-    const handleSave = async () => {
-        try {
-            const authToken = localStorage.getItem('token');
-            if (!authToken) {
-                throw new Error('No token found in localStorage');
-            }
+        <Documentation
+          title="Input fields with icon"
+          description={
+            <p>You can also add icons to the left or right side of the input field by using the <code>&#x3C;InputGroup&#x3E;</code> component and using the <code>&#x3C;InputGroup.Text&#x3E;</code> element with an icon element inside it, either after or before the <code>&#x3C;Form.Control&#x3E;</code> element.</p>
+          }
+          scope={{ Form, InputGroup, FontAwesomeIcon, faSearch }}
+          imports={`import { Form, InputGroup } from '@themesberg/react-bootstrap';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";`}
+          example={`<Form>
+  <Form.Group className="mb-3">
+    <Form.Label>Icon Left</Form.Label>
+    <InputGroup>
+      <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+      <Form.Control type="text" placeholder="Search" />
+    </InputGroup>
+  </Form.Group>
+  <Form.Group className="mb-3">
+    <Form.Label>Icon Right</Form.Label>
+    <InputGroup>
+      <Form.Control type="text" placeholder="Search" />
+      <InputGroup.Text><FontAwesomeIcon icon={faSearch} /></InputGroup.Text>
+    </InputGroup>
+  </Form.Group>
+</Form>`}
+        />
 
-            const response = await fetch('https://staging.iotfactory.eu/api/users/65c3616b56fe3b00181769b3', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Session ${authToken}`
-                },
-                body: JSON.stringify(userData)
-            });
+        <Documentation
+          title="Validation"
+          description={
+            <p>You can easily update the styles of a valid or invalid styles input field by using the <code>isValid</code> or <code>isInvalid</code> attributes. Additionally, you can use the <code>&#x3C;Form.Control.Feedback&#x3E;</code> component to write the message regarding the success or error message.</p>
+          }
+          scope={{ Form }}
+          imports={`import { Form } from '@themesberg/react-bootstrap';`}
+          example={`<Form>
+  <Form.Group className="mb-3">
+    <Form.Label>Username</Form.Label>
+    <Form.Control required isInvalid type="text" />
+    <Form.Control.Feedback type="invalid">Please choose a username.</Form.Control.Feedback>
+  </Form.Group>
+  <Form.Group className="mb-3">
+    <Form.Label>First name</Form.Label>
+    <Form.Control required isValid type="text" defaultValue="Mark" />
+    <Form.Control.Feedback type="valid">Looks good!</Form.Control.Feedback>
+  </Form.Group>
+</Form>`}
+        />
 
-            if (!response.ok) {
-                throw new Error('Failed to save user data');
-            }
+        <Documentation
+          title="Select input"
+          description={
+            <p>The <code>&#x3C;Form.Select&#x3E;</code> component can be used for option selection from the user. You can use the <code>&#x3C;option&#x3E;</code> elements to add multiple options and use the <code>defaultValue</code> attribute to set the default value of the select field.</p>
+          }
+          scope={{ Form }}
+          imports={`import { Form } from '@themesberg/react-bootstrap';`}
+          example={`<Form>
+  <Form.Group className="mb-3">
+    <Form.Label>Example select</Form.Label>
+    <Form.Select>
+      <option defaultValue>Open this select menu</option>
+      <option>One</option>
+      <option>Two</option>
+      <option>Three</option>
+    </Form.Select>
+  </Form.Group>
+</Form>`}
+        />
 
-            setEditing(false);
-            setErrorMessage('');
-        } catch (error) {
-            console.error('Error saving user data:', error);
-            setErrorMessage('Failed to save user data. Please try again.');
-        }
-    };
+        <Documentation
+          title="Multiple select"
+          description=""
+          scope={{ Form }}
+          imports={`import { Form } from '@themesberg/react-bootstrap';`}
+          example={`<Form>
+  <Form.Group className="mb-3">
+    <Form.Label>Example multiple select</Form.Label>
+    <Form.Select multiple>
+      <option defaultValue>Open this select menu</option>
+      <option>One</option>
+      <option>Two</option>
+      <option>Three</option>
+    </Form.Select>
+  </Form.Group>
+</Form>`}
+        />
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setUserData({
-            ...userData,
-            [name]: value
-        });
-    };
+        <Documentation
+          title="Textarea"
+          description={
+            <p>You can create a textarea input field by adding the <code>as="textarea"</code> modifier attribute to the <code>&#x3C;Form.Control&#x3E;</code> component.</p>
+          }
+          scope={{ Form }}
+          imports={`import { Form } from '@themesberg/react-bootstrap';`}
+          example={`<Form>
+  <Form.Group>
+    <Form.Label>Example textarea</Form.Label>
+    <Form.Control as="textarea" rows="4" placeholder="Enter your message..." />
+  </Form.Group>
+</Form>`}
+        />
 
-    const toggleEditing = () => {
-        setEditing(!editing);
-    };
+        <Documentation
+          title="File upload"
+          description={
+            <p>If you want to use an input field to upload files, you need to add the <code>type="file"</code> attribute to the <code>&#x3C;Form.Control&#x3E;</code> component.</p>
+          }
+          scope={{ Form }}
+          imports={`import { Form } from '@themesberg/react-bootstrap';`}
+          example={`<Form>
+  <Form.Control type="file" />
+</Form>`}
+        />
 
+        <Documentation
+          title="Checkboxes"
+          description={
+            <>
+              <p>Use the <code>&#x3C;Form.Check&#x3E;</code> component to create checkbox items. If you want to disable on them, you need to add the <code>disabled</code> attribute.</p>
+              <p>Make sure the is a <code>{'id="*"'}</code> and <code>{'htmlFor="*"'}</code> attribute for each element so that clicking on the text will also toggle the element.</p>
+            </>
+          }
+          scope={{ Form }}
+          imports={`import { Form } from '@themesberg/react-bootstrap';`}
+          example={`<Form>
+  <Form.Check label="Default checkbox" id="checkbox1" htmlFor="checkbox1" />
+  <Form.Check disabled label="Disabled checkbox" id="checkbox2" htmlFor="checkbox2" />
+</Form>`}
+        />
 
+        <Documentation
+          title="Radio buttons"
+          description={
+            <>
+              <p>If you want to use radio buttons, you need to use the <code>&#x3C;Form.Check&#x3E;</code> component with the <code>type="radio"</code> modifier. You can disable the element by using the <code>disabled</code> attribute.</p>
+              <p>Make sure the is a <code>{'id="*"'}</code> and <code>{'htmlFor="*"'}</code> attribute for each element so that clicking on the text will also toggle the element.</p>
+            </>
+          }
+          scope={{ Form }}
+          imports={`import { Form } from '@themesberg/react-bootstrap';`}
+          example={`<Form>
+  <fieldset>
+    <Form.Check
+      defaultChecked
+      type="radio"
+      defaultValue="option1"
+      label="Default radio"
+      name="exampleRadios"
+      id="radio1"
+      htmlFor="radio1"
+      />
 
-    return (
-        <div>
+    <Form.Check
+      type="radio"
+      defaultValue="option2"
+      label="Second default radio"
+      name="exampleRadios"
+      id="radio2"
+      htmlFor="radio2"
+      />
 
-            {/* Supprimer le bouton de toggle pour afficher les données */}
-            <div style={{ display: showUserData ? 'block' : 'none' }}>
-                <h2>Informations de l'utilisateur</h2>
-                <div>
-                    <label>Prénom: </label>
-                    {editing ? (
-                        <input type="text" name="firstName" value={userData.firstName} onChange={handleInputChange} />
-                    ) : (
-                        <span>{userData.firstName}</span>
-                    )}
-                </div>
-                <div>
-                    <label>Nom: </label>
-                    {editing ? (
-                        <input type="text" name="lastName" value={userData.lastName} onChange={handleInputChange} />
-                    ) : (
-                        <span>{userData.lastName}</span>
-                    )}
-                </div>
-                <div>
-                    <label>Email: </label>
-                    {editing ? (
-                        <input type="text" name="email" value={userData.email} onChange={handleInputChange} />
-                    ) : (
-                        <span>{userData.email}</span>
-                    )}
-                </div>
-                <div>
-                    <label>Rôle: </label>
-                    {editing ? (
-                        <input type="text" name="role" value={userData.role} onChange={handleInputChange} />
-                    ) : (
-                        <span>{userData.role}</span>
-                    )}
-                </div>
-                <div>
-                    <label>Langue: </label>
-                    {editing ? (
-                        <input type="text" name="language" value={userData.language} onChange={handleInputChange} />
-                    ) : (
-                        <span>{userData.language}</span>
-                    )}
-                </div>
-                <div>
-                    <label>Localisation: </label>
-                    {editing ? (
-                        <input type="text" name="locale" value={userData.locale} onChange={handleInputChange} />
-                    ) : (
-                        <span>{userData.locale}</span>
-                    )}
-                </div>
-                <div>
-                    <label>Status: </label>
-                    {editing ? (
-                        <input type="text" name="status" value={userData.status} onChange={handleInputChange} />
-                    ) : (
-                        <span>{userData.status}</span>
-                    )}
-                </div>
-                {editing ? (
-                    <button onClick={handleSave}>Enregistrer</button>
-                ) : (
-                    <button onClick={toggleEditing}>Modifier</button>
-                )}
-                {errorMessage && <p className="error-message">{errorMessage}</p>}
-                <li><Link to='/admin'>Fermer</Link></li>
-            </div>
-        </div>
-    );
+    <Form.Check
+      disabled
+      type="radio"
+      defaultValue="option3"
+      label="Disabled radio"
+      name="exampleRadios"
+      id="radio3"
+      htmlFor="radio3"
+      />
+  </fieldset>
+</Form>`}
+        />
+
+        <Documentation
+          title="Datepicker"
+          description={
+            <p>Use the <code>&#x3C;Datetime&#x3E;</code> component to use a datepicker as an input field. You can read more about the options that you can use for this component by reading the <Card.Link href="https://www.npmjs.com/package/react-datetime" target="_blank">react-datetime</Card.Link> documentation.</p>
+          }
+          scope={{ Datetime, Form, InputGroup, FontAwesomeIcon, faCalendarAlt, moment }}
+          imports={`import React, { useState } from "react";
+import { Form, InputGroup } from '@themesberg/react-bootstrap';
+import Datetime from "react-datetime";
+import moment from "moment-timezone";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";`}
+          example={`const Datepicker = () => {
+  const [birthday, setBirthday] = React.useState("");
+
+  return(
+    <Form>
+      <Form.Group className="mb-3">
+        <Datetime
+          timeFormat={false}
+          closeOnSelect={false}
+          onChange={setBirthday}
+          renderInput={(props, openCalendar) => (
+            <InputGroup>
+              <InputGroup.Text><FontAwesomeIcon icon={faCalendarAlt} /></InputGroup.Text>
+              <Form.Control
+                required
+                type="text"
+                value={birthday ? moment(birthday).format("MM/DD/YYYY") : ""}
+                placeholder="mm/dd/yyyy"
+                onFocus={openCalendar}
+                onChange={() => { }} />
+            </InputGroup>
+          )} />
+      </Form.Group>
+    </Form>
+  );
+}
+
+render( <Datepicker /> )`}
+        />
+
+      </Container>
+    </article>
+  );
 };
-
-export default User;

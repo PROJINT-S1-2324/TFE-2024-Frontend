@@ -15,16 +15,38 @@ export const GeneralInfoForm = () => {
   const [editing, setEditing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const loadUserData = async () => {
+    try {
+      const authToken = localStorage.getItem("token");
+      if (!authToken) {
+        throw new Error("No token found in localStorage");
+      }
+
+      const response = await fetch(
+        "https://staging.iotfactory.eu/api/users/65c3616b56fe3b00181769b3",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Session ${authToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to load user data");
+      }
+
+      const data = await response.json();
+      setUserData(data);
+      setErrorMessage("");
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      setErrorMessage("Failed to load user data. Please try again.");
+    }
+  };
+
   useEffect(() => {
-    setUserData({
-      lastName: localStorage.getItem("lastName") || "",
-      firstName: localStorage.getItem("firstName") || "",
-      email: localStorage.getItem("email") || "",
-      role: localStorage.getItem("role") || "",
-      language: localStorage.getItem("language") || "",
-      locale: localStorage.getItem("locale") || "",
-      status: localStorage.getItem("status") || "",
-    });
+    loadUserData();
   }, []);
 
   const handleSave = async () => {
@@ -198,9 +220,12 @@ export const GeneralInfoForm = () => {
             </Button>
           ) : (
             <Button onClick={toggleEditing} variant="info">
-              Edit
+              {editing ? "Cancel" : "Edit"}
             </Button>
           )}
+          <Button onClick={loadUserData} variant="info" className="ms-2">
+            Refresh
+          </Button>
         </div>
         {errorMessage && (
           <p className="text-danger mt-3">{errorMessage}</p>

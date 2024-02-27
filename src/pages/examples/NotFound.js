@@ -22,15 +22,15 @@ export default () => {
                   <Image src={NotFoundImage} className="img-fluid w-75" />
                 </Card.Link>
                 <h1 className="text-primary mt-5">
-                  Page not <span className="fw-bolder">found</span>
+                  Page not  <span className="fw-bolder">found</span>
                 </h1>
                 <p className="lead my-4">
                   Oops! Looks like you followed a bad link. If you think this is a
                   problem with us, please tell us.
             </p>
-                <Button as={Link} variant="primary" className="animate-hover" to={Routes.DashboardOverview.path}>
+                <Button as={Link} variant="primary" className="animate-hover" to={Routes.Signin.path}>
                   <FontAwesomeIcon icon={faChevronLeft} className="animate-left-3 me-3 ms-2" />
-                  Go back home
+                  Go back signin
                 </Button>
               </div>
             </Col>

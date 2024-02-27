@@ -28,7 +28,7 @@ const Logout = () => {
                 // Redirection vers la page Signin après la déconnexion réussie
                 history.push(Routes.Signin.path);
 
-                localStorage.removeItem('token');
+                 localStorage.removeItem('token');
                 console.log('User logged out successfully');
                 console.log('token');
                 

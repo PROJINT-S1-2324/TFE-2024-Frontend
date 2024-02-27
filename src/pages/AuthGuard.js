@@ -10,7 +10,7 @@ const AuthGuard = ({ children }) => {
         return !!token;
     };
 
-    if (isLogged()) {
+    if (!isLogged()) {
         history.push(Routes.Presentation.path);
         return null; // Ou tout autre contenu à afficher pendant la redirection
     }

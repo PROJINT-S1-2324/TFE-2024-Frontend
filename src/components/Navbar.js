@@ -1,15 +1,19 @@
-
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { Routes } from "../routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faCog, faEnvelopeOpen, faSearch, faSignOutAlt, faUserShield } from "@fortawesome/free-solid-svg-icons";
-import { faUserCircle } from "@fortawesome/free-regular-svg-icons";
+import { faBell, faCog, faEnvelopeOpen, faSearch, faSignOutAlt,faChartPie } from "@fortawesome/free-solid-svg-icons"; // Retirer faUserCircle d'ici
+
+// Importer faUserCircle uniquement si nécessaire dans ce fichier
+
 import { Row, Col, Nav, Form, Image, Navbar, Dropdown, Container, ListGroup, InputGroup } from '@themesberg/react-bootstrap';
 
 import NOTIFICATIONS_DATA from "../data/notifications";
 import Profile3 from "../assets/img/team/profile-picture-3.jpg";
 
-
 export default (props) => {
+  const history = useHistory();
+
   const [notifications, setNotifications] = useState(NOTIFICATIONS_DATA);
   const areNotificationsRead = notifications.reduce((acc, notif) => acc && notif.read, true);
 
@@ -46,6 +50,19 @@ export default (props) => {
     );
   };
 
+  const UseProfil = () => {
+    history.push(Routes.Settings.path);
+  };
+
+  const ResetPassword = () => {
+    history.push(Routes.ResetPassword.path);
+  };
+
+  const logout = () => {
+    localStorage.clear();
+    history.push(Routes.Signin.path);
+  };
+
   return (
     <Navbar variant="dark" expanded className="ps-0 pe-2 pb-0">
       <Container fluid className="px-0">
@@ -61,18 +78,57 @@ export default (props) => {
             </Form>
           </div>
           <Nav className="align-items-center">
-            
+            <Dropdown as={Nav.Item} onToggle={markNotificationsAsRead} >
+              <Dropdown.Toggle as={Nav.Link} className="text-dark icon-notifications me-lg-3">
+                <span className="icon icon-sm">
+                  <FontAwesomeIcon icon={faBell} className="bell-shake" />
+                  {areNotificationsRead ? null : <span className="icon-badge rounded-circle unread-notifications" />}
+                </span>
+              </Dropdown.Toggle>
+              <Dropdown.Menu className="dashboard-dropdown notifications-dropdown dropdown-menu-lg dropdown-menu-center mt-2 py-0">
+                <ListGroup className="list-group-flush">
+                  <Nav.Link href="#" className="text-center text-primary fw-bold border-bottom border-light py-3">
+                    Notifications
+                  </Nav.Link>
+
+                  {notifications.map(n => <Notification key={`notification-${n.id}`} {...n} />)}
+
+                  <Dropdown.Item className="text-center text-primary fw-bold py-3">
+                    View all
+                  </Dropdown.Item>
+                </ListGroup>
+              </Dropdown.Menu>
+            </Dropdown>
 
             <Dropdown as={Nav.Item}>
               <Dropdown.Toggle as={Nav.Link} className="pt-1 px-0">
                 <div className="media d-flex align-items-center">
-    
+                  <Image src={Profile3} className="user-avatar md-avatar rounded-circle" />
                   <div className="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                   <span className="mb-0 font-small fw-bold"> Connecter {localStorage.getItem("lastName")} {localStorage.getItem("firstName")}</span>
                   </div>
                 </div>
               </Dropdown.Toggle>
-              
+              <Dropdown.Menu className="user-dropdown dropdown-menu-right mt-2">
+               
+                <Dropdown.Item className="fw-bold" onClick={UseProfil}>
+                  <FontAwesomeIcon icon={faChartPie} className="text-danger me-2" /> My Profil
+                </Dropdown.Item>
+                <Dropdown.Item className="fw-bold" onClick={ResetPassword}>
+                  <FontAwesomeIcon icon={faCog} className="text-danger me-2" /> Reset Password
+                </Dropdown.Item>
+                
+                
+
+                <Dropdown.Divider />
+
+                <Dropdown.Item className="fw-bold" onClick={logout}>
+                  <FontAwesomeIcon icon={faSignOutAlt} className="text-danger me-2" /> Logout
+                </Dropdown.Item>
+
+               
+                
+              </Dropdown.Menu>
             </Dropdown>
           </Nav>
         </div>
