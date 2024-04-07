@@ -4,7 +4,7 @@ import SimpleBar from 'simplebar-react';
 import { useLocation } from "react-router-dom";
 import { CSSTransition } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faBoxOpen, faChartPie, faCog, faFileAlt,faIndustry, faHandHoldingUsd, faSignOutAlt, faTable, faTimes, faCalendarAlt, faMapPin, faInbox, faRocket } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBoxOpen, faChartPie, faCog, faFileAlt,faIndustry,faCogs,  faStar,faHandHoldingUsd, faSignOutAlt, faTable, faTimes, faCalendarAlt, faMapPin, faInbox, faRocket,faWifi,faHome } from "@fortawesome/free-solid-svg-icons";
 import { Nav, Badge, Image, Button, Dropdown, Accordion, Navbar } from '@themesberg/react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -70,9 +70,6 @@ export default (props = {}) => {
   return (
     <>
       <Navbar expand={false} collapseOnSelect variant="dark" className="navbar-theme-primary px-4 d-md-none">
-        <Navbar.Brand className="me-lg-5" as={Link} to={Routes.DashboardOverview.path}>
-          <Image src={ReactHero} className="navbar-brand-light" />
-        </Navbar.Brand>
         <Navbar.Toggle as={Button} aria-controls="main-navbar" onClick={onCollapse}>
           <span className="navbar-toggler-icon" />
         </Navbar.Toggle>
@@ -82,11 +79,9 @@ export default (props = {}) => {
           <div className="sidebar-inner px-4 pt-3">
             <div className="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
               <div className="d-flex align-items-center">
-                <div className="user-avatar lg-avatar me-4">
-                  <Image src={ProfilePicture} className="card-img-top rounded-circle border-white" />
-                </div>
+                
                 <div className="d-block">
-                  <h6>Hi, Jane</h6>
+                  
                   <Button as={Link} variant="secondary" size="xs" to={Routes.Signin.path} className="text-dark">
                     <FontAwesomeIcon icon={faSignOutAlt} className="me-2" /> Sign Out
                   </Button>
@@ -97,32 +92,11 @@ export default (props = {}) => {
               </Nav.Link>
             </div>
             <Nav className="flex-column pt-3 pt-md-0">
-            <NavItem title="IOT FACTORY"  icon={faIndustry } />
-              <NavItem title="Deconnexion" link={Routes.Signup.path} icon={faSignOutAlt} />
-
-              <NavItem title="Dashboard" link={Routes.DashboardOverview.path} icon={faFileAlt} />
-             
-              <NavItem title="Assets" icon={faBook} link={Routes.Transactions.path} />
-              <NavItem title="User Profil" icon={faChartPie} link={Routes.Settings.path} />
-              
-             
-
-              <CollapsableNavItem eventKey="tables/" title="Tables" icon={faTable}>
-                <NavItem title="Bootstrap Table" link={Routes.BootstrapTables.path} />
-              </CollapsableNavItem>
-
-              <CollapsableNavItem eventKey="examples/" title="Settings"  icon={faCog}>
-                <NavItem title="Reset password" link={Routes.ResetPassword.path} />
-                
-              </CollapsableNavItem>
-
-              
-
+            <NavItem title="IOT FACTORY"  icon={faCogs } />
+            <NavItem title="Dashboard" icon={ faHome} link={Routes.Dashboard.path} />
+              <NavItem title="Assets" icon={ faBook} link={Routes.Asset.path} />
+            
               <Dropdown.Divider className="my-3 border-indigo" />
-
-              
-              
-              
             </Nav>
           </div>  
         </SimpleBar>

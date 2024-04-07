@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Col, Row, Card, Button } from "@themesberg/react-bootstrap";
+import { useTranslation } from 'react-i18next';
 
 export const GeneralInfoForm = () => {
   const [userData, setUserData] = useState({
@@ -12,6 +13,8 @@ export const GeneralInfoForm = () => {
     status: "",
   });
 
+  const { t } = useTranslation();
+
   const [editing, setEditing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -23,7 +26,7 @@ export const GeneralInfoForm = () => {
       }
 
       const response = await fetch(
-        "https://staging.iotfactory.eu/api/users/65c3616b56fe3b00181769b3",
+        "https://staging.iotfactory.eu/api/users/65c5f8b5814e940017d5d16c",
         {
           method: "GET",
           headers: {
@@ -57,7 +60,7 @@ export const GeneralInfoForm = () => {
       }
 
       const response = await fetch(
-        "https://staging.iotfactory.eu/api/users/65c3616b56fe3b00181769b3",
+        "https://staging.iotfactory.eu/api/users/65c5f8b5814e940017d5d16c",
         {
           method: "PUT",
           headers: {
@@ -99,7 +102,7 @@ export const GeneralInfoForm = () => {
         <Row>
           <Col md={6} className="mb-3">
             <p>
-              <strong>First Name: </strong>{" "}
+              <strong>{t('First Name:')}  </strong>{" "}
               {editing ? (
                 <input
                   type="text"
@@ -114,7 +117,7 @@ export const GeneralInfoForm = () => {
           </Col>
           <Col md={6} className="mb-3">
             <p>
-              <strong>Last Name: </strong>{" "}
+              <strong>{t('Last Name:')}  </strong>{" "}
               {editing ? (
                 <input
                   type="text"
@@ -132,7 +135,8 @@ export const GeneralInfoForm = () => {
         <Row>
           <Col md={6} className="mb-3">
             <p>
-              <strong>Email: </strong>{" "}
+            
+              <strong>{t(' Email: ')} </strong>{" "}
               {editing ? (
                 <input
                   type="text"
@@ -147,7 +151,8 @@ export const GeneralInfoForm = () => {
           </Col>
           <Col md={6} className="mb-3">
             <p>
-              <strong>Role: </strong>{" "}
+            <th></th>
+              <strong>{t('Role: ')}</strong>{" "}
               {editing ? (
                 <input
                   type="text"
@@ -165,7 +170,7 @@ export const GeneralInfoForm = () => {
         <Row>
           <Col md={6} className="mb-3">
             <p>
-              <strong>Language: </strong>{" "}
+              <strong>{t('Language: ')}</strong>{" "}
               {editing ? (
                 <input
                   type="text"

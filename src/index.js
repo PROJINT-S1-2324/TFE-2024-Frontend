@@ -1,21 +1,11 @@
-// =========================================================
-// * Volt React Dashboard
-// =========================================================
-
-// * Product Page: https://themesberg.com/product/dashboard/volt-react
-// * Copyright 2021 Themesberg (https://www.themesberg.com)
-// * Official Repository: https://github.com/themesberg/volt-react-dashboard
-// * License: MIT License (https://themesberg.com/licensing)
-
-// * Designed and coded by https://themesberg.com
-
-// =========================================================
-
-// * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. Please contact us to request a removal.
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import ScrollToTop from "./components/ScrollToTop";
+import i18n from './i18n';
+import { I18nextProvider } from 'react-i18next';
 
 // core styles
 import "./scss/volt.scss";
@@ -23,15 +13,25 @@ import "./scss/volt.scss";
 // vendor styles
 import "react-datetime/css/react-datetime.css";
 
-import HomePage from "./pages/HomePage";
-
-import ScrollToTop from "./components/ScrollToTop";
+// Enregistrement du service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register(`${process.env.PUBLIC_URL}/sw.js`)
+      .then((registration) => {
+        console.log('Service worker registered:', registration);
+      })
+      .catch((error) => {
+        console.error('Service worker registration failed:', error);
+      });
+  });
+}
 
 ReactDOM.render(
   <HashRouter>
+     <I18nextProvider i18n={i18n}>
     <ScrollToTop />
     <HomePage />
-   
+    </I18nextProvider>
   </HashRouter>,
   document.getElementById("root")
 );

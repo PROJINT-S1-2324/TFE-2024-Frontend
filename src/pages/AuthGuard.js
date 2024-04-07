@@ -1,21 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 import { Routes } from "../routes";
 
 const AuthGuard = ({ children }) => {
     const history = useHistory();
 
-    const isLogged = () => {
+    useEffect(() => {
         const token = localStorage.getItem('token');
-        return !!token;
-    };
-
-    if (!isLogged()) {
-        history.push(Routes.Presentation.path);
-        return null; // Ou tout autre contenu à afficher pendant la redirection
-    }
+        if (!token) {
+            history.push(Routes.Login.path);
+        }
+    }, [history]);
 
     return children;
 };
 
 export default AuthGuard;
+//
