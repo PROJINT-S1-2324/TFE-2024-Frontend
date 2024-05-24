@@ -95,6 +95,7 @@ export default (props = {}) => {
             <NavItem title="IOT FACTORY"  icon={faCogs } />
             <NavItem title="Dashboard" icon={ faHome} link={Routes.Dashboard.path} />
               <NavItem title="Assets" icon={ faBook} link={Routes.Asset.path} />
+              <NavItem title="Durand" icon={ faBook} link={Routes.Durand.path} />
             
               <Dropdown.Divider className="my-3 border-indigo" />
             </Nav>
