@@ -6,6 +6,9 @@ import HomePage from "./pages/HomePage";
 import ScrollToTop from "./components/ScrollToTop";
 import i18n from './i18n';
 import { I18nextProvider } from 'react-i18next';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'animate.css/animate.min.css';
+
 
 // core styles
 import "./scss/volt.scss";

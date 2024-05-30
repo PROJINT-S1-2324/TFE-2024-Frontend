@@ -4,7 +4,7 @@ import SimpleBar from 'simplebar-react';
 import { useLocation } from "react-router-dom";
 import { CSSTransition } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faBoxOpen, faChartPie, faCog, faFileAlt,faIndustry,faCogs,  faStar,faHandHoldingUsd, faSignOutAlt, faTable, faTimes, faCalendarAlt, faMapPin, faInbox, faRocket,faWifi,faHome } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBoxOpen, faChartPie, faCog, faFileAlt,faIndustry,faCogs, faPlug, faStar,faHandHoldingUsd, faSignOutAlt, faTable, faTimes, faCalendarAlt, faMapPin, faInbox, faRocket,faWifi,faHome } from "@fortawesome/free-solid-svg-icons";
 import { Nav, Badge, Image, Button, Dropdown, Accordion, Navbar } from '@themesberg/react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -95,7 +95,7 @@ export default (props = {}) => {
             <NavItem title="IOT FACTORY"  icon={faCogs } />
             <NavItem title="Dashboard" icon={ faHome} link={Routes.Dashboard.path} />
               <NavItem title="Assets" icon={ faBook} link={Routes.Asset.path} />
-              <NavItem title="Durand" icon={ faBook} link={Routes.Durand.path} />
+              <NavItem title="Prise Frogo 1 " icon={ faPlug} link={Routes.PriseFrigo1.path} />
             
               <Dropdown.Divider className="my-3 border-indigo" />
             </Nav>

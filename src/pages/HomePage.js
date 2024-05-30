@@ -14,7 +14,7 @@ import NotFoundPage from "./logo/NotFound";
 import ServerError from "./logo/ServerError";
 import Dashboard from "./Dashboard";
 import ChangePassWord from "./ChangePassWord";
-import Durand from "./Durand";
+import PriseFrigo1 from "./PriseFrigo1";
 
 
 // components
@@ -85,7 +85,7 @@ export default () => (
     <RouteWithLoader exact path={Routes.NotFound.path} component={NotFoundPage} />
     <RouteWithLoader exact path={Routes.ServerError.path} component={ServerError} />
     
-    <RouteWithSidebar exact path={Routes.Durand.path} component={Durand} />
+    <RouteWithSidebar exact path={Routes.PriseFrigo1.path} component={PriseFrigo1} />
     <RouteWithSidebar exact path={Routes.Dashboard.path} component={Dashboard} />
     <RouteWithSidebar exact path={Routes.Asset.path} component={Asset} />
     <RouteWithSidebar exact path={Routes.User.path} component={User} />

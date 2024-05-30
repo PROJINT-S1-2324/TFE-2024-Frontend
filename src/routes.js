@@ -14,7 +14,7 @@ export const Routes = {
     Dashboard: {path: "/Dashboard"},
     ChangePassWord: {path: "/ChangePassWord"},
 
-    Durand: {path: "/Durand"},
+    PriseFrigo1: {path: "/PriseFrigo1"},
 
     
 
