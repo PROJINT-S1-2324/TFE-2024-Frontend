@@ -15,6 +15,7 @@ export const Routes = {
     ChangePassWord: {path: "/ChangePassWord"},
 
     PriseFrigo1: {path: "/PriseFrigo1"},
+    TabPrise: {path: "/TabPrise"},
 
     
 

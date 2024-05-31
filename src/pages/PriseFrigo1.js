@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ChartistGraph from 'react-chartist';
+import Chartist from 'chartist';  // Importer Chartist
 import 'chartist/dist/chartist.css';
 import 'chartist-plugin-tooltips-updated/dist/chartist-plugin-tooltip.css';
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
@@ -8,13 +9,13 @@ import 'animate.css/animate.min.css'; // Importer Animate.css
 import './DataPrise.css'; // Fichier CSS pour les styles personnalisés
 
 const DataPrise = () => {
-  // Initialiser la date par défaut à la date actuelle
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
   };
 
   const [donneesLocales, setDonneesLocales] = useState([]);
+  const [donneesPrecedentes, setDonneesPrecedentes] = useState([]);
   const [date, setDate] = useState(getCurrentDate()); // Utiliser la date actuelle par défaut
   const [totalConsommation, setTotalConsommation] = useState(0); // État pour la consommation totale
   const dateInputRef = useRef(null); // Ref pour le champ de date
@@ -27,36 +28,50 @@ const DataPrise = () => {
       }
       const data = await response.json();
 
-      // Debug: Affichez les données brutes reçues de l'API
-      console.log('Données brutes reçues de l\'API:', data);
-
-      // Transformez les données reçues en format pour Chartist et calculer la consommation totale
       let total = 0;
       const newData = data.map(item => {
         const { hour, consumption } = item;
         total += consumption;
-        return {
-          hour,
-          consumption
-        };
+        return { hour, consumption };
       });
 
-      // Définir la consommation totale
       setTotalConsommation(total);
-
-      // Debug: Affichez les données transformées et la consommation totale
-      console.log('Données transformées:', newData);
-      console.log('Consommation totale:', total);
-
       setDonneesLocales(newData);
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
     }
   };
 
+  const fetchPreviousData = async (selectedDate) => {
+    try {
+      const previousDate = new Date(selectedDate);
+      previousDate.setDate(previousDate.getDate() - 1);
+      const previousDateString = previousDate.toISOString().split('T')[0];
+
+      const response = await fetch(`http://localhost:8080/data/energy/hourly?date=${previousDateString}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+
+      const newData = data.map(item => {
+        const { hour, consumption } = item;
+        return { hour, consumption };
+      });
+
+      setDonneesPrecedentes(newData);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données précédentes:', error);
+    }
+  };
+
   useEffect(() => {
     fetchData(date);
-    const intervalId = setInterval(() => fetchData(date), 60000); // 60000ms = 1 minute
+    fetchPreviousData(date);
+    const intervalId = setInterval(() => {
+      fetchData(date);
+      fetchPreviousData(date);
+    }, 60000); // 60000ms = 1 minute
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, [date]);
 
@@ -75,11 +90,10 @@ const DataPrise = () => {
 
   // Transformer les données en un format utilisable par Chartist
   const labels = donneesLocales.map(item => item.hour.split(' ')[1]); // Extrait l'heure
-  const series = [donneesLocales.map(item => item.consumption)];
-
-  // Debug: Affichez les labels et les séries
-  console.log('Labels pour Chartist:', labels);
-  console.log('Séries pour Chartist:', series);
+  const series = [
+    donneesPrecedentes.map(item => item.consumption),
+    donneesLocales.map(item => item.consumption)
+  ];
 
   const data = {
     labels: labels,
@@ -107,7 +121,42 @@ const DataPrise = () => {
           return `${value} Wh`;
         }
       })
-    ]
+    ],
+    lineSmooth: Chartist.Interpolation.simple(),
+    series: {
+      'series-0': {
+        lineSmooth: Chartist.Interpolation.none(),
+        showPoint: true,
+        showLine: true,
+        showArea: true,
+        areaBase: 0,
+        classNames: {
+          line: 'ct-series-a-line',
+          point: 'ct-series-a-point',
+          area: 'ct-series-a-area'
+        },
+        styles: {
+          'stroke': '#006400', // Couleur verte foncée pour la consommation précédente
+          'stroke-width': '2px'
+        }
+      },
+      'series-1': {
+        lineSmooth: Chartist.Interpolation.none(),
+        showPoint: true,
+        showLine: true,
+        showArea: true,
+        areaBase: 0,
+        classNames: {
+          line: 'ct-series-b-line',
+          point: 'ct-series-b-point',
+          area: 'ct-series-b-area'
+        },
+        styles: {
+          'stroke': '#00008B', // Couleur bleue foncée pour la consommation actuelle
+          'stroke-width': '2px'
+        }
+      }
+    }
   };
 
   return (
@@ -130,29 +179,19 @@ const DataPrise = () => {
           data={data} 
           options={options} 
           type="Line"
-          className="ct-series-g ct-double-octave chart"
+          className="ct-double-octave chart"
         />
       </div>
-      <table className="table table-striped text-center animate__animated animate__fadeInUp">
-        <thead className="thead-dark">
-          <tr>
-            <th scope="col">Heure</th>
-            <th scope="col">Consommation (Wh)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {donneesLocales.map((item, index) => (
-            <tr key={index}>
-              <td>{item.hour.split(' ')[1]}</td>
-              <td>{item.consumption} Wh</td>
-            </tr>
-          ))}
-          <tr>
-            <td><strong>Total</strong></td>
-            <td><strong>{totalConsommation} Wh</strong></td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="d-flex justify-content-center my-3">
+        <div className="d-flex align-items-center mx-3">
+          <div style={{ width: '20px', height: '20px', backgroundColor: '#006400', marginRight: '10px' }}></div>
+          <span>Consommation précédente</span>
+        </div>
+        <div className="d-flex align-items-center mx-3">
+          <div style={{ width: '20px', height: '20px', backgroundColor: '#00008B', marginRight: '10px' }}></div>
+          <span>Consommation actuelle</span>
+        </div>
+      </div>
     </div>
   );
 };

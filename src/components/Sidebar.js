@@ -1,11 +1,10 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SimpleBar from 'simplebar-react';
 import { useLocation } from "react-router-dom";
 import { CSSTransition } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faBoxOpen, faChartPie, faCog, faFileAlt,faIndustry,faCogs, faPlug, faStar,faHandHoldingUsd, faSignOutAlt, faTable, faTimes, faCalendarAlt, faMapPin, faInbox, faRocket,faWifi,faHome } from "@fortawesome/free-solid-svg-icons";
-import { Nav, Badge, Image, Button, Dropdown, Accordion, Navbar } from '@themesberg/react-bootstrap';
+import { faBook, faCogs, faHome, faTable, faSignOutAlt, faTimes, faChevronRight, faPlug, faChartLine } from "@fortawesome/free-solid-svg-icons";
+import { Nav, Button, Dropdown, Navbar, Image, Badge } from '@themesberg/react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import { Routes } from "../routes";
@@ -17,52 +16,39 @@ export default (props = {}) => {
   const location = useLocation();
   const { pathname } = location;
   const [show, setShow] = useState(false);
+  const [showFrigo, setShowFrigo] = useState(false);
   const showClass = show ? "show" : "";
+
+  useEffect(() => {
+    // Ouvre le menu Prise Frigo si le pathname contient l'un des sous-routes
+    if (pathname.includes(Routes.PriseFrigo1.path) || pathname.includes(Routes.TabPrise.path)) {
+      setShowFrigo(true);
+    } else {
+      setShowFrigo(false);
+    }
+  }, [pathname]);
 
   const onCollapse = () => setShow(!show);
 
-  const CollapsableNavItem = (props) => {
-    const { eventKey, title, icon, children = null } = props;
-    const defaultKey = pathname.indexOf(eventKey) !== -1 ? eventKey : "";
-
-    return (
-      <Accordion as={Nav.Item} defaultActiveKey={defaultKey}>
-        <Accordion.Item eventKey={eventKey}>
-          <Accordion.Button as={Nav.Link} className="d-flex justify-content-between align-items-center">
-            <span>
-              <span className="sidebar-icon"><FontAwesomeIcon icon={icon} /> </span>
-              <span className="sidebar-text">{title}</span>
-            </span>
-          </Accordion.Button>
-          <Accordion.Body className="multi-level">
-            <Nav className="flex-column">
-              {children}
-            </Nav>
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
-    );
-  };
-
   const NavItem = (props) => {
-    const { title, link, external, target, icon, image, badgeText, badgeBg = "secondary", badgeColor = "primary" } = props;
+    const { title, link, external, target, icon, image, badgeText, badgeBg = "secondary", badgeColor = "primary", children = null } = props;
     const classNames = badgeText ? "d-flex justify-content-start align-items-center justify-content-between" : "";
     const navItemClassName = link === pathname ? "active" : "";
     const linkProps = external ? { href: link } : { as: Link, to: link };
 
     return (
       <Nav.Item className={navItemClassName} onClick={() => setShow(false)}>
-        <Nav.Link {...linkProps} target={target} className={classNames}>
+        <Nav.Link {...linkProps} target={target} className={`${classNames} bg-dark text-white border-0`}>
           <span>
             {icon ? <span className="sidebar-icon"><FontAwesomeIcon icon={icon} /> </span> : null}
             {image ? <Image src={image} width={20} height={20} className="sidebar-icon svg-icon" /> : null}
-
             <span className="sidebar-text">{title}</span>
           </span>
           {badgeText ? (
             <Badge pill bg={badgeBg} text={badgeColor} className="badge-md notification-count ms-2">{badgeText}</Badge>
           ) : null}
         </Nav.Link>
+        {children}
       </Nav.Item>
     );
   };
@@ -79,9 +65,11 @@ export default (props = {}) => {
           <div className="sidebar-inner px-4 pt-3">
             <div className="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
               <div className="d-flex align-items-center">
-                
+                <div className="user-avatar lg-avatar me-4">
+                  <Image src={ProfilePicture} className="card-img-top rounded-circle border-white" />
+                </div>
                 <div className="d-block">
-                  
+                  <h6>Hi, Jane</h6>
                   <Button as={Link} variant="secondary" size="xs" to={Routes.Signin.path} className="text-dark">
                     <FontAwesomeIcon icon={faSignOutAlt} className="me-2" /> Sign Out
                   </Button>
@@ -92,14 +80,29 @@ export default (props = {}) => {
               </Nav.Link>
             </div>
             <Nav className="flex-column pt-3 pt-md-0">
-            <NavItem title="IOT FACTORY"  icon={faCogs } />
-            <NavItem title="Dashboard" icon={ faHome} link={Routes.Dashboard.path} />
-              <NavItem title="Assets" icon={ faBook} link={Routes.Asset.path} />
-              <NavItem title="Prise Frogo 1 " icon={ faPlug} link={Routes.PriseFrigo1.path} />
-            
+              <NavItem title="IOT FACTORY" icon={faCogs} />
+              <NavItem title="Dashboard" icon={faHome} link={Routes.Dashboard.path} />
+              <NavItem title="Assets" icon={faBook} link={Routes.Asset.path} />
+              
+              <Nav.Item onClick={() => setShowFrigo(!showFrigo)}>
+                <Nav.Link className="d-flex justify-content-between align-items-center bg-dark text-white border-0">
+                  <span>
+                    <span className="sidebar-icon"><FontAwesomeIcon icon={faPlug} /> </span>
+                    <span className="sidebar-text">Prise Frigo</span>
+                  </span>
+                  <FontAwesomeIcon icon={faChevronRight} className="ms-2" />
+                </Nav.Link>
+                {showFrigo && (
+                  <Nav className="flex-column ms-3">
+                    <NavItem title="Diagram Consom" icon={faChartLine} link={Routes.PriseFrigo1.path} />
+                    <NavItem title="Tableau Consom" icon={faTable} link={Routes.TabPrise.path} />
+                  </Nav>
+                )}
+              </Nav.Item>
+              
               <Dropdown.Divider className="my-3 border-indigo" />
             </Nav>
-          </div>  
+          </div>
         </SimpleBar>
       </CSSTransition>
     </>
