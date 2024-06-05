@@ -33,6 +33,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@themesberg/react-bootstrap": "^1.4.1",
+    "ajv": "^8.15.0",
     "animate.css": "^4.1.1",
     "boostrap": "^2.0.0",
     "bootstrap": "^5.3.3",
@@ -58,10 +59,12 @@
     "react-scripts": "3.4.3",
     "react-transition-group": "^4.4.1",
     "simplebar-react": "^2.3.0",
+    "typescript": "^5.4.5",
     "victory": "^37.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
+    "dev": "react-scripts start",
     "build-sw": "workbox generateSW public/workbox-config.js",
     "build": "react-scripts build",
     "build-local": "PUBLIC_URL=./ react-scripts build",

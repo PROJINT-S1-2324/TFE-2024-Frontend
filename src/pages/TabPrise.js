@@ -15,7 +15,7 @@ const TabPrise = () => {
 
   const fetchData = async (selectedDate) => {
     try {
-      const response = await fetch(`http://localhost:8080/data/energy/hourly?date=${selectedDate}`);
+      const response = await fetch(`http://20.123.48.27:8080/data/energy/hourly?date=${selectedDate}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

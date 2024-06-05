@@ -22,7 +22,7 @@ const DataPrise = () => {
 
   const fetchData = async (selectedDate) => {
     try {
-      const response = await fetch(`http://localhost:8080/data/energy/hourly?date=${selectedDate}`);
+      const response = await fetch(`http://20.123.48.27:8080/data/energy/hourly?date=${selectedDate}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -48,7 +48,7 @@ const DataPrise = () => {
       previousDate.setDate(previousDate.getDate() - 1);
       const previousDateString = previousDate.toISOString().split('T')[0];
 
-      const response = await fetch(`http://localhost:8080/data/energy/hourly?date=${previousDateString}`);
+      const response = await fetch(`http://20.123.48.27:8080/data/energy/hourly?date=${previousDateString}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
