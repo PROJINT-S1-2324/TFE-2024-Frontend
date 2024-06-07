@@ -17,6 +17,12 @@ export const Routes = {
     PriseFrigo1: {path: "/PriseFrigo1"},
     TabPrise: {path: "/TabPrise"},
 
+    Eclairage: {path: "/Eclairage"},
+    TabEclairage: {path: "/TabEclairage"},
+
+    Boilier: {path: "/Boilier"},
+    TabBoilier: {path: "/TabBoilier"},
+
     
 
 };

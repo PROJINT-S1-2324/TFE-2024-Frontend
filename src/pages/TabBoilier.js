@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'animate.css/animate.min.css'; // Importer Animate.css
 
-const TabPrise = () => {
+const TabBoilier = () => {
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -16,7 +16,7 @@ const TabPrise = () => {
 
   const fetchData = async (selectedDate) => {
     try {
-      const response = await fetch(`http://20.123.48.27:8080/data/energy/hourly?date=${selectedDate}`);
+      const response = await fetch(`http://20.123.48.27:8080/boil/data/energy/hourly?date=${selectedDate}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -117,4 +117,4 @@ const TabPrise = () => {
   );
 };
 
-export default TabPrise;
+export default TabBoilier;

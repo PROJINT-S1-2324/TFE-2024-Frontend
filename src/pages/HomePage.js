@@ -16,6 +16,11 @@ import Dashboard from "./Dashboard";
 import ChangePassWord from "./ChangePassWord";
 import PriseFrigo1 from "./PriseFrigo1";
 import TabPrise from "./TabPrise";
+import TabEclairage from "./TabEclairage";
+import Eclairage from "./Eclairage";
+import TabBoilier from "./TabBoilier";
+import Boilier from "./Boilier";
+
 
 
 // components
@@ -85,7 +90,12 @@ export default () => (
     <RouteWithLoader exact path={Routes.Signin.path} component={Signin} />
     <RouteWithLoader exact path={Routes.NotFound.path} component={NotFoundPage} />
     <RouteWithLoader exact path={Routes.ServerError.path} component={ServerError} />
-    
+
+  
+    <RouteWithSidebar exact path={Routes.Boilier.path} component={Boilier} />
+    <RouteWithSidebar exact path={Routes.TabBoilier.path} component={TabBoilier} />
+    <RouteWithSidebar exact path={Routes.Eclairage.path} component={Eclairage} />
+    <RouteWithSidebar exact path={Routes.TabEclairage.path} component={TabEclairage} />
     <RouteWithSidebar exact path={Routes.PriseFrigo1.path} component={PriseFrigo1} />
     <RouteWithSidebar exact path={Routes.TabPrise.path} component={TabPrise} />
     <RouteWithSidebar exact path={Routes.Dashboard.path} component={Dashboard} />

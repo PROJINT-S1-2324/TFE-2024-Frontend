@@ -1,0 +1,155 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Importer Bootstrap
+import 'animate.css/animate.min.css'; // Importer Animate.css
+
+const Eclairage = () => {
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
+  const [donneesLocales, setDonneesLocales] = useState([]);
+  const [date, setDate] = useState(getCurrentDate()); // Utiliser la date actuelle par défaut
+  const [totalConsommation, setTotalConsommation] = useState(0); // État pour la consommation totale
+  const dateInputRef = useRef(null); // Ref pour le champ de date
+
+  const fetchData = async (selectedDate) => {
+    try {
+      const response = await fetch(`http://20.123.48.27:8080/eclai/data/eclai/energy/hourly?date=${selectedDate}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+
+      let total = 0;
+      const newData = data.map(item => {
+        const { hour, consumption } = item;
+        total += consumption;
+        return { hour, consumption };
+      });
+
+      setTotalConsommation(total);
+      setDonneesLocales(newData);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(date);
+    const intervalId = setInterval(() => {
+      fetchData(date);
+    }, 60000); // 60000ms = 1 minute
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, [date]);
+
+  const changeDate = (days) => {
+    const newDate = new Date(date);
+    newDate.setDate(newDate.getDate() + days);
+    setDate(newDate.toISOString().split('T')[0]);
+  };
+
+  const handleDateContainerClick = () => {
+    if (dateInputRef.current) {
+      dateInputRef.current.focus();
+      dateInputRef.current.showPicker();
+    }
+  };
+
+  // Palette de couleurs pour les barres
+  const colors = [
+    '#007bff', '#28a745', '#dc3545', '#ffc107', '#17a2b8', '#6f42c1', '#e83e8c', '#fd7e14', '#20c997', '#6610f2'
+  ];
+
+  // Calculer la largeur maximale pour adapter les barres à la taille du conteneur
+  const maxConsumption = Math.max(...donneesLocales.map(item => item.consumption), 0);
+  const scaleFactor = maxConsumption > 0 ? 300 / maxConsumption : 1;
+
+  return (
+    <Container>
+      <h1 className="text-center my-4 animate__animated animate__fadeInDown">Consommation Journalière de l'Eclairage</h1>
+      <Row className="mb-4 text-center">
+        <Col>
+          <Button className="mx-2" onClick={() => changeDate(-1)}>&lt; Jour précédent</Button>
+        </Col>
+        <Col>
+          <Form.Control
+            ref={dateInputRef}
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="text-center"
+            style={{ maxWidth: '200px', margin: '0 auto' }}
+          />
+        </Col>
+        <Col>
+          <Button className="mx-2" onClick={() => changeDate(1)}>Jour suivant &gt;</Button>
+        </Col>
+      </Row>
+      <Row className="mb-4 animate__animated animate__fadeIn">
+        <Col>
+          <div className="consumption-chart">
+            <div className="chart-axis">
+              {donneesLocales.map((item, index) => (
+                <div key={index} className="chart-bar-wrapper">
+                  <span className="bar-hour">{item.hour.split(' ')[1]}</span>
+                  <div className="chart-bar" style={{ width: `${item.consumption * scaleFactor}px`, backgroundColor: colors[index % colors.length] }}>
+                    <span className="bar-label">{item.consumption.toFixed(2)} Wh</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Col>
+      </Row>
+      <style>{`
+        .consumption-chart {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          height: 100%;
+          width: 100%;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 10px;
+        }
+        .chart-axis {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          width: 100%;
+        }
+        .chart-bar-wrapper {
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+          width: 100%;
+        }
+        .chart-bar {
+          height: 30px;
+          color: white;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          border-radius: 5px;
+          transition: width 0.3s ease;
+          margin-left: 10px;
+          padding-left: 10px;
+        }
+        .bar-label {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .bar-hour {
+          min-width: 60px;
+          text-align: right;
+          margin-right: 10px;
+        }
+      `}</style>
+    </Container>
+  );
+};
+
+export default Eclairage;

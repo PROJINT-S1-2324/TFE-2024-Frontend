@@ -3,7 +3,7 @@ import SimpleBar from 'simplebar-react';
 import { useLocation } from "react-router-dom";
 import { CSSTransition } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faCogs, faHome, faTable, faSignOutAlt, faTimes, faChevronRight, faPlug, faChartLine } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faCogs, faHome, faTable, faSignOutAlt, faTimes, faChevronRight, faPlug, faChartLine, faLightbulb, faWater } from "@fortawesome/free-solid-svg-icons";
 import { Nav, Button, Dropdown, Navbar, Image, Badge } from '@themesberg/react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -17,6 +17,8 @@ export default (props = {}) => {
   const { pathname } = location;
   const [show, setShow] = useState(false);
   const [showFrigo, setShowFrigo] = useState(false);
+  const [showEclairage, setShowEclairage] = useState(false);
+  const [showBoilier, setShowBoilier] = useState(false);
   const showClass = show ? "show" : "";
 
   useEffect(() => {
@@ -25,6 +27,18 @@ export default (props = {}) => {
       setShowFrigo(true);
     } else {
       setShowFrigo(false);
+    }
+    // Ouvre le menu Eclairage si le pathname contient l'un des sous-routes
+    if (pathname.includes(Routes.Eclairage.path) || pathname.includes(Routes.TabEclairage.path)) {
+      setShowEclairage(true);
+    } else {
+      setShowEclairage(false);
+    }
+    // Ouvre le menu Boilier si le pathname contient l'un des sous-routes
+    if (pathname.includes(Routes.Boilier.path) || pathname.includes(Routes.TabBoilier.path)) {
+      setShowBoilier(true);
+    } else {
+      setShowBoilier(false);
     }
   }, [pathname]);
 
@@ -100,6 +114,38 @@ export default (props = {}) => {
                 )}
               </Nav.Item>
               
+              <Nav.Item onClick={() => setShowEclairage(!showEclairage)}>
+                <Nav.Link className="d-flex justify-content-between align-items-center bg-dark text-white border-0">
+                  <span>
+                    <span className="sidebar-icon"><FontAwesomeIcon icon={faLightbulb} /> </span>
+                    <span className="sidebar-text">Eclairage</span>
+                  </span>
+                  <FontAwesomeIcon icon={faChevronRight} className="ms-2" />
+                </Nav.Link>
+                {showEclairage && (
+                  <Nav className="flex-column ms-3">
+                    <NavItem title="Diagram Consom" icon={faChartLine} link={Routes.Eclairage.path} />
+                    <NavItem title="Tableau Consom" icon={faTable} link={Routes.TabEclairage.path} />
+                  </Nav>
+                )}
+              </Nav.Item>
+              
+              <Nav.Item onClick={() => setShowBoilier(!showBoilier)}>
+                <Nav.Link className="d-flex justify-content-between align-items-center bg-dark text-white border-0">
+                  <span>
+                    <span className="sidebar-icon"><FontAwesomeIcon icon={faWater} /> </span>
+                    <span className="sidebar-text">Boilier</span>
+                  </span>
+                  <FontAwesomeIcon icon={faChevronRight} className="ms-2" />
+                </Nav.Link>
+                {showBoilier && (
+                  <Nav className="flex-column ms-3">
+                    <NavItem title="Diagram Consom" icon={faChartLine} link={Routes.Boilier.path} />
+                    <NavItem title="Tableau Consom" icon={faTable} link={Routes.TabBoilier.path} />
+                  </Nav>
+                )}
+              </Nav.Item>
+
               <Dropdown.Divider className="my-3 border-indigo" />
             </Nav>
           </div>

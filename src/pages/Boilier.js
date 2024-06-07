@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ChartistGraph from 'react-chartist';
-import Chartist from 'chartist';  // Importer Chartist
 import 'chartist/dist/chartist.css';
 import 'chartist-plugin-tooltips-updated/dist/chartist-plugin-tooltip.css';
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importer Bootstrap
 import 'animate.css/animate.min.css'; // Importer Animate.css
 
-
-const DataPrise = () => {
+const Boilier = () => {
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -22,7 +20,7 @@ const DataPrise = () => {
 
   const fetchData = async (selectedDate) => {
     try {
-      const response = await fetch(`http://20.123.48.27:8080/data/energy/hourly?date=${selectedDate}`);
+      const response = await fetch(`http://20.123.48.27:8080/boil/data/energy/hourly?date=${selectedDate}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -48,7 +46,7 @@ const DataPrise = () => {
       previousDate.setDate(previousDate.getDate() - 1);
       const previousDateString = previousDate.toISOString().split('T')[0];
 
-      const response = await fetch(`http://20.123.48.27:8080/data/energy/hourly?date=${previousDateString}`);
+      const response = await fetch(`http://20.123.48.27:8080/boil/data/energy/hourly?date=${previousDateString}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -103,11 +101,11 @@ const DataPrise = () => {
   const series = [
     combinedLabels.map(label => {
       const data = donneesPrecedentes.find(item => item.hour.split(' ')[1] === label);
-      return data ? data.consumption : null;
+      return data ? data.consumption : 0;
     }),
     combinedLabels.map(label => {
       const data = donneesLocales.find(item => item.hour.split(' ')[1] === label);
-      return data ? data.consumption : null;
+      return data ? data.consumption : 0;
     })
   ];
 
@@ -138,46 +136,11 @@ const DataPrise = () => {
         }
       })
     ],
-    lineSmooth: Chartist.Interpolation.simple(),
-    series: {
-      'series-0': {
-        lineSmooth: Chartist.Interpolation.none(),
-        showPoint: true,
-        showLine: true,
-        showArea: true,
-        areaBase: 0,
-        classNames: {
-          line: 'ct-series-a-line',
-          point: 'ct-series-a-point',
-          area: 'ct-series-a-area'
-        },
-        styles: {
-          'stroke': '#006400', // Couleur verte foncée pour la consommation précédente
-          'stroke-width': '2px'
-        }
-      },
-      'series-1': {
-        lineSmooth: Chartist.Interpolation.none(),
-        showPoint: true,
-        showLine: true,
-        showArea: true,
-        areaBase: 0,
-        classNames: {
-          line: 'ct-series-b-line',
-          point: 'ct-series-b-point',
-          area: 'ct-series-b-area'
-        },
-        styles: {
-          'stroke': '#00008B', // Couleur bleue foncée pour la consommation actuelle
-          'stroke-width': '2px'
-        }
-      }
-    }
   };
 
   return (
     <div className="container">
-      <h1 className="text-center my-4 animate__animated animate__fadeInDown">Consommation Journaliere prise frigo 1</h1>
+      <h1 className="text-center my-4 animate__animated animate__fadeInDown">Consommation Journalière du Boilier</h1>
       <div className="mb-4 text-center">
         <button className="btn btn-primary mx-2" onClick={() => changeDate(-1)}>&lt; Jour précédent</button>
         <input
@@ -194,7 +157,7 @@ const DataPrise = () => {
         <ChartistGraph 
           data={data} 
           options={options} 
-          type="Line"
+          type="Bar" // Changer le type de graphique à "Bar"
           className="ct-double-octave chart"
         />
       </div>
@@ -212,4 +175,4 @@ const DataPrise = () => {
   );
 };
 
-export default DataPrise;
+export default Boilier;
