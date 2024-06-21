@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import ChartistGraph from 'react-chartist';
+import 'chartist/dist/chartist.css';
+import 'chartist-plugin-tooltips-updated/dist/chartist-plugin-tooltip.css';
+import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importer Bootstrap
 import 'animate.css/animate.min.css'; // Importer Animate.css
+import { Card, Button, Col, Row } from '@themesberg/react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 
 const Eclairage = () => {
   const getCurrentDate = () => {
@@ -31,8 +37,16 @@ const Eclairage = () => {
 
       setTotalConsommation(total);
       setDonneesLocales(newData);
+      localStorage.setItem(`eclairageData-${selectedDate}`, JSON.stringify(newData));
+      localStorage.setItem(`eclairageTotal-${selectedDate}`, total.toString());
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
+      const localData = localStorage.getItem(`eclairageData-${selectedDate}`);
+      const localTotal = localStorage.getItem(`eclairageTotal-${selectedDate}`);
+      if (localData && localTotal) {
+        setDonneesLocales(JSON.parse(localData));
+        setTotalConsommation(parseInt(localTotal, 10));
+      }
     }
   };
 
@@ -67,42 +81,56 @@ const Eclairage = () => {
   const scaleFactor = maxConsumption > 0 ? 300 / maxConsumption : 1;
 
   return (
-    <Container>
-      <h1 className="text-center my-4 animate__animated animate__fadeInDown">Consommation Journalière de l'Eclairage</h1>
-      <Row className="mb-4 text-center">
-        <Col>
-          <Button className="mx-2" onClick={() => changeDate(-1)}>&lt; Jour précédent</Button>
-        </Col>
-        <Col>
-          <Form.Control
-            ref={dateInputRef}
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="text-center"
-            style={{ maxWidth: '200px', margin: '0 auto' }}
-          />
-        </Col>
-        <Col>
-          <Button className="mx-2" onClick={() => changeDate(1)}>Jour suivant &gt;</Button>
-        </Col>
-      </Row>
-      <Row className="mb-4 animate__animated animate__fadeIn">
-        <Col>
-          <div className="consumption-chart">
-            <div className="chart-axis">
-              {donneesLocales.map((item, index) => (
-                <div key={index} className="chart-bar-wrapper">
-                  <span className="bar-hour">{item.hour.split(' ')[1]}</span>
-                  <div className="chart-bar" style={{ width: `${item.consumption * scaleFactor}px`, backgroundColor: colors[index % colors.length] }}>
-                    <span className="bar-label">{item.consumption.toFixed(2)} Wh</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+    <Card className="bg-secondary-alt shadow-sm">
+      <Card.Header className="d-flex flex-row align-items-center flex-0">
+        <div className="d-block">
+          <h5 className="fw-normal mb-2">
+            Consommation Journalière de l'Eclairage
+          </h5>
+          <h3>{totalConsommation} Wh</h3>
+          <small className="fw-bold mt-2">
+            <span className="me-2">Yesterday</span>
+            <FontAwesomeIcon icon={faAngleUp} className="text-success me-1" />
+            <span className="text-success">
+              +10%
+            </span>
+          </small>
+        </div>
+        <div className="d-flex ms-auto">
+          <Button onClick={() => changeDate(-1)}>Jour précédent</Button>
+          <Button onClick={() => changeDate(1)}>Jour suivant</Button>
+        </div>
+      </Card.Header>
+      <Card.Body className="p-2">
+        <div className="container">
+          <div className="mb-4 text-center">
+            <input
+              ref={dateInputRef}
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="form-control d-inline-block text-center"
+              style={{ maxWidth: '200px' }}
+            />
           </div>
-        </Col>
-      </Row>
+          <Row className="mb-4 animate__animated animate__fadeIn">
+            <Col>
+              <div className="consumption-chart">
+                <div className="chart-axis">
+                  {donneesLocales.map((item, index) => (
+                    <div key={index} className="chart-bar-wrapper">
+                      <span className="bar-hour">{item.hour.split(' ')[1]}</span>
+                      <div className="chart-bar" style={{ width: `${item.consumption * scaleFactor}px`, backgroundColor: colors[index % colors.length] }}>
+                        <span className="bar-label">{item.consumption.toFixed(2)} Wh</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </Card.Body>
       <style>{`
         .consumption-chart {
           display: flex;
@@ -148,7 +176,7 @@ const Eclairage = () => {
           margin-right: 10px;
         }
       `}</style>
-    </Container>
+    </Card>
   );
 };
 

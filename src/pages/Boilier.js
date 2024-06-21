@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ChartistGraph from 'react-chartist';
+import Chartist from 'chartist';  // Importer Chartist
 import 'chartist/dist/chartist.css';
 import 'chartist-plugin-tooltips-updated/dist/chartist-plugin-tooltip.css';
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importer Bootstrap
 import 'animate.css/animate.min.css'; // Importer Animate.css
+import { Card, Button, Col, Row } from '@themesberg/react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 
 const Boilier = () => {
   const getCurrentDate = () => {
@@ -35,8 +39,16 @@ const Boilier = () => {
 
       setTotalConsommation(total);
       setDonneesLocales(newData);
+      localStorage.setItem(`data-${selectedDate}`, JSON.stringify(newData));
+      localStorage.setItem(`total-${selectedDate}`, total.toString());
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
+      const localData = localStorage.getItem(`data-${selectedDate}`);
+      const localTotal = localStorage.getItem(`total-${selectedDate}`);
+      if (localData && localTotal) {
+        setDonneesLocales(JSON.parse(localData));
+        setTotalConsommation(parseInt(localTotal, 10));
+      }
     }
   };
 
@@ -62,18 +74,28 @@ const Boilier = () => {
       });
 
       setDonneesPrecedentes(newData);
+      localStorage.setItem(`previousData-${previousDateString}`, JSON.stringify(newData));
     } catch (error) {
       console.error('Erreur lors de la récupération des données précédentes:', error);
+      const localDatab = localStorage.getItem(`previousData-${selectedDate}`);
+      if (localDatab) {
+        setDonneesPrecedentes(JSON.parse(localDatab));
+      }
     }
   };
 
   useEffect(() => {
-    fetchData(date);
-    fetchPreviousData(date);
+    const fetchAndSetData = async () => {
+      await fetchData(date);
+      await fetchPreviousData(date);
+    };
+
+    fetchAndSetData();
+
     const intervalId = setInterval(() => {
-      fetchData(date);
-      fetchPreviousData(date);
+      fetchAndSetData();
     }, 60000); // 60000ms = 1 minute
+
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, [date]);
 
@@ -136,42 +158,97 @@ const Boilier = () => {
         }
       })
     ],
+    lineSmooth: Chartist.Interpolation.simple(),
+    series: {
+      'series-0': {
+        lineSmooth: Chartist.Interpolation.none(),
+        showPoint: true,
+        showLine: true,
+        showArea: true,
+        areaBase: 0,
+        classNames: {
+          line: 'ct-series-a-line',
+          point: 'ct-series-a-point',
+          area: 'ct-series-a-area'
+        },
+        styles: {
+          'stroke': '#006400', // Couleur verte foncée pour la consommation précédente
+          'stroke-width': '2px'
+        }
+      },
+      'series-1': {
+        lineSmooth: Chartist.Interpolation.none(),
+        showPoint: true,
+        showLine: true,
+        showArea: true,
+        areaBase: 0,
+        classNames: {
+          line: 'ct-series-b-line',
+          point: 'ct-series-b-point',
+          area: 'ct-series-b-area'
+        },
+        styles: {
+          'stroke': '#00008B', // Couleur bleue foncée pour la consommation actuelle
+          'stroke-width': '2px'
+        }
+      }
+    }
   };
 
   return (
-    <div className="container">
-      <h1 className="text-center my-4 animate__animated animate__fadeInDown">Consommation Journalière du Boilier</h1>
-      <div className="mb-4 text-center">
-        <button className="btn btn-primary mx-2" onClick={() => changeDate(-1)}>&lt; Jour précédent</button>
-        <input
-          ref={dateInputRef}
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="form-control d-inline-block text-center"
-          style={{ maxWidth: '200px' }}
-        />
-        <button className="btn btn-primary mx-2" onClick={() => changeDate(1)}>Jour suivant &gt;</button>
-      </div>
-      <div className="mb-4 animate__animated animate__fadeIn">
-        <ChartistGraph 
-          data={data} 
-          options={options} 
-          type="Bar" // Changer le type de graphique à "Bar"
-          className="ct-double-octave chart"
-        />
-      </div>
-      <div className="d-flex justify-content-center my-3">
-        <div className="d-flex align-items-center mx-3">
-          <div style={{ width: '20px', height: '20px', backgroundColor: '#006400', marginRight: '10px' }}></div>
-          <span>Consommation précédente</span>
+    <Card className="bg-secondary-alt shadow-sm">
+      <Card.Header className="d-flex flex-row align-items-center flex-0">
+        <div className="d-block">
+          <h5 className="fw-normal mb-2">
+            Consommation Journalière
+          </h5>
+          <h3>{totalConsommation} Wh</h3>
+          <small className="fw-bold mt-2">
+            <span className="me-2">Yesterday</span>
+            <FontAwesomeIcon icon={faAngleUp} className="text-success me-1" />
+            <span className="text-success">
+              +10%
+            </span>
+          </small>
         </div>
-        <div className="d-flex align-items-center mx-3">
-          <div style={{ width: '20px', height: '20px', backgroundColor: '#00008B', marginRight: '10px' }}></div>
-          <span>Consommation actuelle</span>
+        <div className="d-flex ms-auto">
+          <Button onClick={() => changeDate(-1)}>Jour précédent</Button>
+          <Button onClick={() => changeDate(1)}>Jour suivant</Button>
         </div>
-      </div>
-    </div>
+      </Card.Header>
+      <Card.Body className="p-2">
+        <div className="container">
+          <div className="mb-4 text-center">
+            <input
+              ref={dateInputRef}
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="form-control d-inline-block text-center"
+              style={{ maxWidth: '200px' }}
+            />
+          </div>
+          <div className="mb-4 animate__animated animate__fadeIn">
+            <ChartistGraph 
+              data={data} 
+              options={options} 
+              type="Bar" // Changer le type de graphique à "Bar"
+              className="ct-double-octave chart"
+            />
+          </div>
+          <div className="d-flex justify-content-center my-3">
+            <div className="d-flex align-items-center mx-3">
+              <div style={{ width: '20px', height: '20px', backgroundColor: '#006400', marginRight: '10px' }}></div>
+              <span>Consommation précédente</span>
+            </div>
+            <div className="d-flex align-items-center mx-3">
+              <div style={{ width: '20px', height: '20px', backgroundColor: '#00008B', marginRight: '10px' }}></div>
+              <span>Consommation actuelle</span>
+            </div>
+          </div>
+        </div>
+      </Card.Body>
+    </Card>
   );
 };
 

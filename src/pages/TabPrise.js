@@ -9,6 +9,7 @@ const TabPrise = () => {
   };
 
   const [donneesLocales, setDonneesLocales] = useState([]);
+  const [donneesPrecedentes, setDonneesPrecedentes] = useState([]);
   const [totalConsommation, setTotalConsommation] = useState(0);
   const [date, setDate] = useState(getCurrentDate());
   const [currentPage, setCurrentPage] = useState(0);
@@ -31,14 +32,54 @@ const TabPrise = () => {
 
       setTotalConsommation(total);
       setDonneesLocales(newData);
+      localStorage.setItem(`donneesLocales_${selectedDate}`, JSON.stringify(newData)); // Stocker les données dans localStorage
+      localStorage.setItem(`totalConsommation_${selectedDate}`, total.toString()); // Stocker la consommation totale
       setCurrentPage(0); // Reset to the first page whenever data is fetched
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
+      const localData = localStorage.getItem(`donneesLocales_${selectedDate}`);
+      const localTotal = localStorage.getItem(`totalConsommation_${selectedDate}`);
+      if (localData && localTotal) {
+        setDonneesLocales(JSON.parse(localData));
+        setTotalConsommation(parseInt(localTotal, 10));
+      }
+    }
+  };
+
+  const fetchPreviousData = async (selectedDate) => {
+    try {
+      const previousDate = new Date(selectedDate);
+      previousDate.setDate(previousDate.getDate() - 1);
+      const previousDateString = previousDate.toISOString().split('T')[0];
+
+      const response = await fetch(`http://20.123.48.27:8080/data/energy/hourly?date=${previousDateString}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+
+      const newData = data.filter(item => {
+        const hour = parseInt(item.hour.split(':')[0], 10);
+        return hour >= 18 || hour === 0;
+      }).map(item => {
+        const { hour, consumption } = item;
+        return { hour, consumption };
+      });
+
+      setDonneesPrecedentes(newData);
+      localStorage.setItem(`donneesPrecedentes_${previousDateString}`, JSON.stringify(newData)); // Stocker les données précédentes dans localStorage
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données précédentes:', error);
+      const localData = localStorage.getItem(`donneesPrecedentes_${selectedDate}`);
+      if (localData) {
+        setDonneesPrecedentes(JSON.parse(localData));
+      }
     }
   };
 
   useEffect(() => {
     fetchData(date);
+    fetchPreviousData(date);
   }, [date]);
 
   const changeDate = (days) => {

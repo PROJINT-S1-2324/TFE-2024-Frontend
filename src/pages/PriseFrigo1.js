@@ -6,7 +6,9 @@ import 'chartist-plugin-tooltips-updated/dist/chartist-plugin-tooltip.css';
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importer Bootstrap
 import 'animate.css/animate.min.css'; // Importer Animate.css
-
+import { Card, Button, Col, Row } from '@themesberg/react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 
 const DataPrise = () => {
   const getCurrentDate = () => {
@@ -37,8 +39,16 @@ const DataPrise = () => {
 
       setTotalConsommation(total);
       setDonneesLocales(newData);
+      localStorage.setItem(`priseData-${selectedDate}`, JSON.stringify(newData));
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
+      const localData = localStorage.getItem(`priseData-${selectedDate}`);
+      if (localData) {
+        const parsedData = JSON.parse(localData);
+        setDonneesLocales(parsedData);
+        const total = parsedData.reduce((sum, item) => sum + item.consumption, 0);
+        setTotalConsommation(total);
+      }
     }
   };
 
@@ -54,7 +64,6 @@ const DataPrise = () => {
       }
       const data = await response.json();
 
-      // Filtrer les données pour ne garder que les heures entre 18h et 23h59
       const newData = data.filter(item => {
         const hour = parseInt(item.hour.split(':')[0], 10);
         return hour >= 18 || hour === 0;
@@ -64,8 +73,14 @@ const DataPrise = () => {
       });
 
       setDonneesPrecedentes(newData);
+      localStorage.setItem(`prisePreviousData-${previousDateString}`, JSON.stringify(newData));
     } catch (error) {
       console.error('Erreur lors de la récupération des données précédentes:', error);
+      const localData = localStorage.getItem(`prisePreviousData-${selectedDate}`);
+      if (localData) {
+        const parsedData = JSON.parse(localData);
+        setDonneesPrecedentes(parsedData);
+      }
     }
   };
 
@@ -92,22 +107,20 @@ const DataPrise = () => {
     }
   };
 
-  // Transformer les données en un format utilisable par Chartist
   const labels = donneesLocales.map(item => item.hour.split(' ')[1]); // Extrait l'heure
   const previousLabels = donneesPrecedentes.map(item => item.hour.split(' ')[1]); // Extrait l'heure pour les données précédentes
 
-  // Assurez-vous que les labels de consommation précédente sont alignés avec les labels actuels
   const combinedLabels = [...new Set([...previousLabels, ...labels])];
   combinedLabels.sort((a, b) => parseInt(a.split(':')[0], 10) - parseInt(b.split(':')[0], 10));
 
   const series = [
     combinedLabels.map(label => {
       const data = donneesPrecedentes.find(item => item.hour.split(' ')[1] === label);
-      return data ? data.consumption : null;
+      return data ? data.consumption : 0;
     }),
     combinedLabels.map(label => {
       const data = donneesLocales.find(item => item.hour.split(' ')[1] === label);
-      return data ? data.consumption : null;
+      return data ? data.consumption : 0;
     })
   ];
 
@@ -176,39 +189,59 @@ const DataPrise = () => {
   };
 
   return (
-    <div className="container">
-      <h1 className="text-center my-4 animate__animated animate__fadeInDown">Consommation Journaliere prise frigo 1</h1>
-      <div className="mb-4 text-center">
-        <button className="btn btn-primary mx-2" onClick={() => changeDate(-1)}>&lt; Jour précédent</button>
-        <input
-          ref={dateInputRef}
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="form-control d-inline-block text-center"
-          style={{ maxWidth: '200px' }}
-        />
-        <button className="btn btn-primary mx-2" onClick={() => changeDate(1)}>Jour suivant &gt;</button>
-      </div>
-      <div className="mb-4 animate__animated animate__fadeIn">
-        <ChartistGraph 
-          data={data} 
-          options={options} 
-          type="Line"
-          className="ct-double-octave chart"
-        />
-      </div>
-      <div className="d-flex justify-content-center my-3">
-        <div className="d-flex align-items-center mx-3">
-          <div style={{ width: '20px', height: '20px', backgroundColor: '#006400', marginRight: '10px' }}></div>
-          <span>Consommation précédente</span>
+    <Card className="bg-secondary-alt shadow-sm">
+      <Card.Header className="d-flex flex-row align-items-center flex-0">
+        <div className="d-block">
+          <h5 className="fw-normal mb-2">
+            Consommation Journalière
+          </h5>
+          <h3>{totalConsommation} Wh</h3>
+          <small className="fw-bold mt-2">
+            <span className="me-2">Yesterday</span>
+            <FontAwesomeIcon icon={faAngleUp} className="text-success me-1" />
+            <span className="text-success">
+              +10%
+            </span>
+          </small>
         </div>
-        <div className="d-flex align-items-center mx-3">
-          <div style={{ width: '20px', height: '20px', backgroundColor: '#00008B', marginRight: '10px' }}></div>
-          <span>Consommation actuelle</span>
+        <div className="d-flex ms-auto">
+          <Button onClick={() => changeDate(-1)}>Jour précédent</Button>
+          <Button onClick={() => changeDate(1)}>Jour suivant</Button>
         </div>
-      </div>
-    </div>
+      </Card.Header>
+      <Card.Body className="p-2">
+        <div className="container">
+          <div className="mb-4 text-center">
+            <input
+              ref={dateInputRef}
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="form-control d-inline-block text-center"
+              style={{ maxWidth: '200px' }}
+            />
+          </div>
+          <div className="mb-4 animate__animated animate__fadeIn">
+            <ChartistGraph 
+              data={data} 
+              options={options} 
+              type="Line"
+              className="ct-double-octave chart"
+            />
+          </div>
+          <div className="d-flex justify-content-center my-3">
+            <div className="d-flex align-items-center mx-3">
+              <div style={{ width: '20px', height: '20px', backgroundColor: '#006400', marginRight: '10px' }}></div>
+              <span>Consommation précédente</span>
+            </div>
+            <div className="d-flex align-items-center mx-3">
+              <div style={{ width: '20px', height: '20px', backgroundColor: '#00008B', marginRight: '10px' }}></div>
+              <span>Consommation actuelle</span>
+            </div>
+          </div>
+        </div>
+      </Card.Body>
+    </Card>
   );
 };
 

@@ -1,108 +1,130 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Pagination } from '@themesberg/react-bootstrap';
-import { useTranslation } from 'react-i18next';
+import reactMockup from '../assets/img/shelly1.jpg'; // Première image
+import secondMockup from '../assets/img/Shelly2.jpg'; // Deuxième image
 
 const Assets = () => {
-    const [token, setToken] = useState('');
-    const [assets, setAssets] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [assetsPerPage] = useState(10);
-    const [totalPages, setTotalPages] = useState(0);
-    const { t } = useTranslation();
-    const [selectedAsset, setSelectedAsset] = useState(null); // État pour stocker l'asset sélectionné
+    const [deviceInfo1, setDeviceInfo1] = useState(null);
+    const [deviceInfo2, setDeviceInfo2] = useState(null);
+    const [currentImage, setCurrentImage] = useState(0); // État pour gérer l'image actuelle
+
+    // Fonction pour récupérer les informations du premier appareil depuis l'API
+    const fetchDeviceInfo1 = async () => {
+        try {
+            const response = await fetch('https://shelly-106-eu.shelly.cloud/device/status/?id=543204508608&auth_key=MjRiNjYwdWlk571844EF8698B132529C85123EF715DC4F355B8BFD47E4FDB6A2BF53A0B5614E61544A67E40B906D');
+            const data = await response.json();
+            console.log('API response 1:', data); // Log la réponse de l'API
+            if (data.isok) {
+                setDeviceInfo1(data.data);
+                localStorage.setItem('deviceInfo1', JSON.stringify(data.data)); // Stocker les données dans localStorage
+            } else {
+                console.error('Failed to fetch device info 1');
+            }
+        } catch (error) {
+            console.error('Error fetching device info 1:', error);
+        }
+    };
+
+    // Fonction pour récupérer les informations du deuxième appareil depuis l'API
+    const fetchDeviceInfo2 = async () => {
+        try {
+            const response = await fetch('https://shelly-106-eu.shelly.cloud/device/status/?id=5432046d02fc&auth_key=MjRiNjYwdWlk571844EF8698B132529C85123EF715DC4F355B8BFD47E4FDB6A2BF53A0B5614E61544A67E40B906D');
+            const data = await response.json();
+            console.log('API response 2:', data); // Log la réponse de l'API
+            if (data.isok) {
+                setDeviceInfo2(data.data);
+                localStorage.setItem('deviceInfo2', JSON.stringify(data.data)); // Stocker les données dans localStorage
+            } else {
+                console.error('Failed to fetch device info 2');
+            }
+        } catch (error) {
+            console.error('Error fetching device info 2:', error);
+        }
+    };
 
     useEffect(() => {
-        // Récupérer le token d'authentification depuis le local storage
-        const authToken = localStorage.getItem('token');
-        if (authToken) {
-            // Définir le token dans l'état local
-            setToken(authToken);
+        // Charger les informations du premier appareil au démarrage
+        const storedDeviceInfo1 = localStorage.getItem('deviceInfo1');
+        if (storedDeviceInfo1) {
+            setDeviceInfo1(JSON.parse(storedDeviceInfo1));
+        } else {
+            fetchDeviceInfo1();
         }
     }, []);
 
-    const getAssets = async () => {
-        try {
-            // Envoyer une requête à l'API pour obtenir les actifs
-            const response = await fetch('https://staging.iotfactory.eu/api/assets', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Session ${token}` // Utiliser le token dans l'en-tête de la requête
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch assets');
-            }
-
-            const data = await response.json();
-            // Mettre à jour les actifs avec les données reçues de l'API
-            setAssets(data.data);
-            // Calculer le nombre total de pages pour la pagination
-            const pages = Math.ceil(data.data.length / assetsPerPage);
-            setTotalPages(pages);
-        } catch (error) {
-            console.error('Error fetching assets:', error);
-        }
-    };
-
     useEffect(() => {
-        // Charger les actifs lors du montage du composant
-        getAssets();
-    }, [token]); // Réexécuter l'effet lorsque le token change
-
-    // Logique de pagination
-    const indexOfLastAsset = currentPage * assetsPerPage;
-    const indexOfFirstAsset = indexOfLastAsset - assetsPerPage;
-    const currentAssets = assets.slice(indexOfFirstAsset, indexOfLastAsset);
-
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-    const handleClick = (asset) => {
-        // Si l'asset sélectionné est le même que celui déjà sélectionné, le désélectionner
-        if (selectedAsset && selectedAsset._id === asset._id) {
-            setSelectedAsset(null);
-        } else {
-            setSelectedAsset(asset); // Mettre à jour l'asset sélectionné
+        // Charger les informations du deuxième appareil lorsque l'image change
+        if (currentImage === 1) {
+            const storedDeviceInfo2 = localStorage.getItem('deviceInfo2');
+            if (storedDeviceInfo2) {
+                setDeviceInfo2(JSON.parse(storedDeviceInfo2));
+            } else {
+                fetchDeviceInfo2();
+            }
         }
+    }, [currentImage]);
+
+    // Fonction pour convertir l'uptime de secondes en un format plus lisible
+    const formatUptime = (uptime) => {
+        const days = Math.floor(uptime / (24 * 3600));
+        const hours = Math.floor((uptime % (24 * 3600)) / 3600);
+        const minutes = Math.floor((uptime % 3600) / 60);
+        const seconds = uptime % 60;
+        return `${days}d ${hours}h ${minutes}m ${seconds}s`;
     };
+
+    // Fonction pour basculer entre les images
+    const handleNext = () => {
+        setCurrentImage((prevImage) => (prevImage === 0 ? 1 : 0));
+    };
+
+    const handlePrev = () => {
+        setCurrentImage((prevImage) => (prevImage === 1 ? 0 : 0));
+    };
+
+    const images = [reactMockup, secondMockup];
 
     return (
-        <div>
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>{t('Id')}</th>
-                        <th>{t('Name')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentAssets.map((asset, index) => (
-                        <React.Fragment key={index}>
-                            <tr onClick={() => handleClick(asset)}>
-                                <td>{asset._id}</td>
-                                <td>{asset.name}</td>
-                            </tr>
-                        </React.Fragment>
-                    ))}
-                </tbody>
-            </Table>
-
-            <Pagination>
-                <Pagination.Prev onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} />
-                {[...Array(totalPages)].map((_, index) => (
-                    <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
-                        {index + 1}
-                    </Pagination.Item>
-                ))}
-                <Pagination.Next onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} />
-            </Pagination>
-
-            {selectedAsset && (
-                <div style={{ border: '1px solid black', padding: '10px', marginTop: '10px', width: '200px', textAlign: 'center' }}>
-                    <p>Status: {selectedAsset.status}</p>
-                    <p>Created At: {selectedAsset.createdAt}</p>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
+            <div style={{ flex: 1, textAlign: 'center' }}>
+                <img 
+                    src={images[currentImage]} 
+                    alt="Device" 
+                    style={{ width: '100%', maxWidth: '300px', margin: 'auto' }} 
+                />
+                <div style={{ marginTop: '20px' }}>
+                    <button onClick={handlePrev} style={{ marginRight: '10px' }}>Précédent</button>
+                    <button onClick={handleNext}>Suivant</button>
                 </div>
-            )}
+            </div>
+            <div style={{ flex: 1, textAlign: 'left', padding: '20px' }}>
+                {currentImage === 0 && deviceInfo1 && (
+                    <div>
+                        <p><strong>Id: </strong>{deviceInfo1.device_status.id}</p>
+                        <p><strong>Status: </strong>{deviceInfo1.online ? 'Online' : 'Offline'}</p>
+                        <p><strong>MAC Address: </strong>{deviceInfo1.device_status.sys.mac}</p>
+                        <p><strong>IP Address: </strong>{deviceInfo1.device_status.wifi.sta_ip}</p>
+                        <p><strong>SSID: </strong>{deviceInfo1.device_status.wifi.ssid}</p>
+                        <p><strong>Signal Strength (RSSI): </strong>{deviceInfo1.device_status.wifi.rssi}</p>
+                        <p><strong>Uptime: </strong>{formatUptime(deviceInfo1.device_status.sys.uptime)}</p>
+                        <p><strong>Firmware Version: </strong>{deviceInfo1.device_status.sys.available_updates.stable.version}</p>
+                    </div>
+                )}
+                {currentImage === 1 && deviceInfo2 && (
+                    <div>
+                        <p><strong>Id: </strong>{deviceInfo2.device_status.id}</p>
+                        <p><strong>Status: </strong>{deviceInfo2.online ? 'Online' : 'Offline'}</p>
+                        <p><strong>MAC Address: </strong>{deviceInfo2.device_status.sys.mac}</p>
+                        <p><strong>IP Address: </strong>{deviceInfo2.device_status.wifi.sta_ip}</p>
+                        <p><strong>SSID: </strong>{deviceInfo2.device_status.wifi.ssid}</p>
+                        <p><strong>Signal Strength (RSSI): </strong>{deviceInfo2.device_status.wifi.rssi}</p>
+                        <p><strong>Uptime: </strong>{formatUptime(deviceInfo2.device_status.sys.uptime)}</p>
+                        <p><strong>Firmware Version: </strong>{deviceInfo2.device_status.sys.available_updates.stable.version}</p>
+                    </div>
+                )}
+                {((currentImage === 0 && !deviceInfo1) || (currentImage === 1 && !deviceInfo2)) && (
+                    <p>Loading device info...</p>
+                )}
+            </div>
         </div>
     );
 };

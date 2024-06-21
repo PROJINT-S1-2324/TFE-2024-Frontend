@@ -15,6 +15,17 @@ const TabEclairage = () => {
   const dateInputRef = useRef(null);
 
   const fetchData = async (selectedDate) => {
+    if (!navigator.onLine) {
+      // Use local storage data if offline
+      const localData = localStorage.getItem(`eclairageData-${selectedDate}`);
+      const localTotal = localStorage.getItem(`eclairageTotal-${selectedDate}`);
+      if (localData && localTotal) {
+        setDonneesLocales(JSON.parse(localData));
+        setTotalConsommation(parseInt(localTotal, 10));
+        return;
+      }
+    }
+
     try {
       const response = await fetch(`http://20.123.48.27:8080/eclai/data/eclai/energy/hourly?date=${selectedDate}`);
       if (!response.ok) {
@@ -32,8 +43,19 @@ const TabEclairage = () => {
       setTotalConsommation(total);
       setDonneesLocales(newData);
       setCurrentPage(0); // Reset to the first page whenever data is fetched
+
+      // Store data in localStorage
+      localStorage.setItem(`eclairageData-${selectedDate}`, JSON.stringify(newData));
+      localStorage.setItem(`eclairageTotal-${selectedDate}`, total.toString());
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
+      // Use local storage data in case of error
+      const localData = localStorage.getItem(`eclairageData-${selectedDate}`);
+      const localTotal = localStorage.getItem(`eclairageTotal-${selectedDate}`);
+      if (localData && localTotal) {
+        setDonneesLocales(JSON.parse(localData));
+        setTotalConsommation(parseInt(localTotal, 10));
+      }
     }
   };
 
