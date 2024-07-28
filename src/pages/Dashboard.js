@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Container, Row, Col, Button, Card, Form } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import ChartistGraph from 'react-chartist';
 import 'chartist/dist/chartist.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'animate.css/animate.min.css';
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLightbulb, faPlug, faBurn, faCalendarAlt, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faLightbulb, faPlug, faBurn, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import CounterWidget from './CounterWidget';
 import SalesValueWidget from './SalesValueWidget';
 
@@ -27,7 +27,6 @@ const Dashboard = () => {
   const [totalConsumption, setTotalConsumption] = useState(0);
   const [componentConsumption, setComponentConsumption] = useState({ eclai: 0, prise: 0, boilier: 0 });
   const [monthlyTotal, setMonthlyTotal] = useState(0);
-  const dateInputRef = useRef(null);
 
   const fetchDataEclai = async (date) => {
     try {
@@ -154,12 +153,19 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    // Effect to calculate and update data initially
     calculateTotalConsumption(date);
-  }, [date]);
-
-  useEffect(() => {
     calculateMonthlyTotalConsumption(yearMonth);
-  }, [yearMonth]);
+
+    // Set interval to update data every 1 minute
+    const interval = setInterval(() => {
+      calculateTotalConsumption(date);
+      calculateMonthlyTotalConsumption(yearMonth);
+    }, 60000); // 60000 milliseconds = 1 minute
+
+    // Clean up interval on component unmount
+    return () => clearInterval(interval);
+  }, [date, yearMonth]); // Dependency array ensures effect runs on mount and when date or yearMonth changes
 
   const changeDate = (days) => {
     const newDate = new Date(date);
@@ -173,7 +179,7 @@ const Dashboard = () => {
     setYearMonth(newYearMonth.toISOString().slice(0, 7));
   };
 
-  const itemsPerPage = 8;
+  const itemsPerPage = 4;
   const [currentPage, setCurrentPage] = useState(0);
   const totalPages = Math.ceil(totalConsumptionByHour.length / itemsPerPage);
   const paginatedData = totalConsumptionByHour.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
@@ -211,12 +217,11 @@ const Dashboard = () => {
       <Row className="my-4">
         <Col className="text-center">
           <h2 className="animate__animated animate__fadeInDown">Consommation Totale du Mois (kWh)</h2>
-          <Button className="mx-2" onClick={() => changeMonth(-1)}>&lt; Mois précédent</Button>
-          <Button className="mx-2" onClick={() => changeMonth(1)}>Mois suivant &gt;</Button>
-          <div><strong>{getMonthName(yearMonth)} :</strong> {monthlyTotal.toFixed(3)} kWh</div>
+          <Button className="mx-2" onClick={() => changeMonth(-1)}> Mois précédent</Button>
+          <Button className="mx-2" onClick={() => changeMonth(1)}>Mois suivant </Button>
+          <div><h2>{getMonthName(yearMonth)} : {monthlyTotal.toFixed(3)} kWh</h2> </div>
         </Col>
       </Row>
-
       <Row className="justify-content-md-center">
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <CounterWidget
@@ -280,7 +285,6 @@ const Dashboard = () => {
       </div>
       <Card.Body className="p-2">
         <div className="container">
-          
           <div className="mb-4 animate__animated animate__fadeIn">
             <ChartistGraph 
               data={chartData} 

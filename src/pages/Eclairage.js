@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ChartistGraph from 'react-chartist';
 import 'chartist/dist/chartist.css';
 import 'chartist-plugin-tooltips-updated/dist/chartist-plugin-tooltip.css';
-import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importer Bootstrap
 import 'animate.css/animate.min.css'; // Importer Animate.css
 import { Card, Button, Col, Row } from '@themesberg/react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import { useTranslation } from 'react-i18next';
 
 const Eclairage = () => {
+  const { t } = useTranslation();
+
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -85,20 +84,13 @@ const Eclairage = () => {
       <Card.Header className="d-flex flex-row align-items-center flex-0">
         <div className="d-block">
           <h5 className="fw-normal mb-2">
-            Consommation Journalière de l'Eclairage
+            {t('dailyConsumptionLighting')}
           </h5>
-          <h3>{totalConsommation} Wh</h3>
-          <small className="fw-bold mt-2">
-            <span className="me-2">Yesterday</span>
-            <FontAwesomeIcon icon={faAngleUp} className="text-success me-1" />
-            <span className="text-success">
-              +10%
-            </span>
-          </small>
+          <h3>{t('consumption', { totalConsumption: totalConsommation })}</h3>
         </div>
         <div className="d-flex ms-auto">
-          <Button onClick={() => changeDate(-1)}>Jour précédent</Button>
-          <Button onClick={() => changeDate(1)}>Jour suivant</Button>
+          <Button onClick={() => changeDate(-1)}>{t('previousDay')}</Button>
+          <Button onClick={() => changeDate(1)}>{t('nextDay')}</Button>
         </div>
       </Card.Header>
       <Card.Body className="p-2">
@@ -111,6 +103,7 @@ const Eclairage = () => {
               onChange={(e) => setDate(e.target.value)}
               className="form-control d-inline-block text-center"
               style={{ maxWidth: '200px' }}
+              aria-label={t('date')}
             />
           </div>
           <Row className="mb-4 animate__animated animate__fadeIn">
@@ -119,9 +112,9 @@ const Eclairage = () => {
                 <div className="chart-axis">
                   {donneesLocales.map((item, index) => (
                     <div key={index} className="chart-bar-wrapper">
-                      <span className="bar-hour">{item.hour.split(' ')[1]}</span>
+                      <span className="bar-hour">{t('hour', { hour: item.hour.split(' ')[1] })}</span>
                       <div className="chart-bar" style={{ width: `${item.consumption * scaleFactor}px`, backgroundColor: colors[index % colors.length] }}>
-                        <span className="bar-label">{item.consumption.toFixed(2)} Wh</span>
+                        <span className="bar-label">{t('wh', { value: item.consumption.toFixed(2) })}</span>
                       </div>
                     </div>
                   ))}

@@ -1,71 +1,61 @@
 import React, { useState, useEffect } from "react";
-import { Col, Row, Card, Button } from "@themesberg/react-bootstrap";
-import { useTranslation } from 'react-i18next';
+import { Container, Card, Form, Button, Row, Col } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 export const GeneralInfoForm = () => {
   const [userData, setUserData] = useState({
-    lastName: "",
+    id: 0,
     firstName: "",
+    lastName: "",
+    address: "",
+    phoneNumber: "",
     email: "",
-    role: "",
-    language: "",
-    locale: "",
-    status: "",
   });
 
   const { t } = useTranslation();
-
   const [editing, setEditing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const loadUserData = async () => {
-    try {
-      const authToken = localStorage.getItem("token");
-      if (!authToken) {
-        throw new Error("No token found in localStorage");
-      }
-
-      const response = await fetch(
-        "https://staging.iotfactory.eu/api/users/65c5f8b5814e940017d5d16c",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Session ${authToken}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to load user data");
-      }
-
-      const data = await response.json();
-      setUserData(data);
-      setErrorMessage("");
-    } catch (error) {
-      console.error("Error loading user data:", error);
-      setErrorMessage("Failed to load user data. Please try again.");
-    }
-  };
-
   useEffect(() => {
-    loadUserData();
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://20.123.48.27:8080/api/users`);
+
+        if (!response.ok) {
+          throw new Error("Failed to load user data");
+        }
+
+        const data = await response.json();
+        if (data.length > 0) {
+          setUserData(data[0]); // Mise à jour avec le premier utilisateur de la liste (supposant un seul utilisateur pour l'instant)
+          localStorage.setItem("userData", JSON.stringify(data[0])); // Stocker les données localement
+          setErrorMessage("");
+        } else {
+          setErrorMessage("No user data available");
+        }
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        const storedData = localStorage.getItem("userData");
+        if (storedData) {
+          setUserData(JSON.parse(storedData)); // Charger les données à partir de localStorage en cas d'erreur
+          setErrorMessage("Loaded offline data.");
+        } else {
+          setErrorMessage("Failed to load user data. Please try again.");
+        }
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSave = async () => {
     try {
-      const authToken = localStorage.getItem("token");
-      if (!authToken) {
-        throw new Error("No token found in localStorage");
-      }
-
       const response = await fetch(
-        "https://staging.iotfactory.eu/api/users/65c5f8b5814e940017d5d16c",
+        `http://20.123.48.27:8080/api/users/${userData.id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Session ${authToken}`,
           },
           body: JSON.stringify(userData),
         }
@@ -76,6 +66,7 @@ export const GeneralInfoForm = () => {
       }
 
       setEditing(false);
+      localStorage.setItem("userData", JSON.stringify(userData)); // Mettre à jour les données localement après la sauvegarde
       setErrorMessage("");
     } catch (error) {
       console.error("Error saving user data:", error);
@@ -96,146 +87,89 @@ export const GeneralInfoForm = () => {
   };
 
   return (
-    <Card border="light" className="bg-white shadow-sm mb-4">
-      <Card.Body>
-        <h5 className="mb-4">General information</h5>
-        <Row>
-          <Col md={6} className="mb-3">
-            <p>
-              <strong>{t('First Name:')}  </strong>{" "}
-              {editing ? (
-                <input
+    <Container fluid className="py-4">
+      <h1 className="mb-4">Informations générales de l'utilisateur</h1>
+      <Card border="light" className="bg-white shadow-sm mb-4">
+        <Card.Body>
+          <Form>
+            <Row className="mb-3">
+              <Form.Group as={Col} sm={6}>
+                <Form.Label>{t("Prénom :")}</Form.Label>
+                <Form.Control
                   type="text"
                   name="firstName"
                   value={userData.firstName}
                   onChange={handleInputChange}
+                  disabled={!editing}
+                  className="rounded-0"
                 />
-              ) : (
-                userData.firstName
-              )}
-            </p>
-          </Col>
-          <Col md={6} className="mb-3">
-            <p>
-              <strong>{t('Last Name:')}  </strong>{" "}
-              {editing ? (
-                <input
+              </Form.Group>
+              <Form.Group as={Col} sm={6}>
+                <Form.Label>{t("Nom :")}</Form.Label>
+                <Form.Control
                   type="text"
                   name="lastName"
                   value={userData.lastName}
                   onChange={handleInputChange}
+                  disabled={!editing}
+                  className="rounded-0"
                 />
-              ) : (
-                userData.lastName
-              )}
-            </p>
-          </Col>
-        </Row>
+              </Form.Group>
+            </Row>
+            <Row className="mb-3">
+              <Form.Group as={Col} sm={6}>
+                <Form.Label>{t("Adresse :")}</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="address"
+                  value={userData.address}
+                  onChange={handleInputChange}
+                  disabled={!editing}
+                  className="rounded-0"
+                />
+              </Form.Group>
+              <Form.Group as={Col} sm={6}>
+                <Form.Label>{t("Numéro de téléphone :")}</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="phoneNumber"
+                  value={userData.phoneNumber}
+                  onChange={handleInputChange}
+                  disabled={!editing}
+                  className="rounded-0"
+                />
+              </Form.Group>
+            </Row>
+            <Form.Group className="mb-3">
+              <Form.Label>{t("Email :")}</Form.Label>
+              <Form.Control
+                type="text"
+                name="email"
+                value={userData.email}
+                onChange={handleInputChange}
+                disabled={!editing}
+                className="rounded-0"
+              />
+            </Form.Group>
 
-        <Row>
-          <Col md={6} className="mb-3">
-            <p>
-            
-              <strong>{t(' Email: ')} </strong>{" "}
+            <div className="mt-3 d-flex justify-content-end">
               {editing ? (
-                <input
-                  type="text"
-                  name="email"
-                  value={userData.email}
-                  onChange={handleInputChange}
-                />
+                <Button onClick={handleSave} variant="primary" className="me-2">
+                  Enregistrer
+                </Button>
               ) : (
-                userData.email
+                <Button onClick={toggleEditing} variant="info" className="me-2">
+                  Modifier
+                </Button>
               )}
-            </p>
-          </Col>
-          <Col md={6} className="mb-3">
-            <p>
-            <th></th>
-              <strong>{t('Role: ')}</strong>{" "}
-              {editing ? (
-                <input
-                  type="text"
-                  name="role"
-                  value={userData.role}
-                  onChange={handleInputChange}
-                />
-              ) : (
-                userData.role
-              )}
-            </p>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col md={6} className="mb-3">
-            <p>
-              <strong>{t('Language: ')}</strong>{" "}
-              {editing ? (
-                <input
-                  type="text"
-                  name="language"
-                  value={userData.language}
-                  onChange={handleInputChange}
-                />
-              ) : (
-                userData.language
-              )}
-            </p>
-          </Col>
-          <Col md={6} className="mb-3">
-            <p>
-              <strong>Locale: </strong>{" "}
-              {editing ? (
-                <input
-                  type="text"
-                  name="locale"
-                  value={userData.locale}
-                  onChange={handleInputChange}
-                />
-              ) : (
-                userData.locale
-              )}
-            </p>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col md={6} className="mb-3">
-            <p>
-              <strong>Status: </strong>{" "}
-              {editing ? (
-                <input
-                  type="text"
-                  name="status"
-                  value={userData.status}
-                  onChange={handleInputChange}
-                />
-              ) : (
-                userData.status
-              )}
-            </p>
-          </Col>
-        </Row>
-
-        <div className="mt-3">
-          {editing ? (
-            <Button onClick={handleSave} variant="primary">
-              Save
-            </Button>
-          ) : (
-            <Button onClick={toggleEditing} variant="info">
-              {editing ? "Cancel" : "Edit"}
-            </Button>
-          )}
-          <Button onClick={loadUserData} variant="info" className="ms-2">
-            Refresh
-          </Button>
-        </div>
-        {errorMessage && (
-          <p className="text-danger mt-3">{errorMessage}</p>
-        )}
-      </Card.Body>
-    </Card>
+              <Button onClick={() => window.location.reload()} variant="info">
+                Actualiser
+              </Button>
+            </div>
+            {errorMessage && <p className="text-danger mt-3">{errorMessage}</p>}
+          </Form>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };

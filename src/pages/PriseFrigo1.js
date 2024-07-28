@@ -9,8 +9,11 @@ import 'animate.css/animate.min.css'; // Importer Animate.css
 import { Card, Button, Col, Row } from '@themesberg/react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import { useTranslation } from 'react-i18next';
 
 const DataPrise = () => {
+  const { t } = useTranslation();
+
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -135,19 +138,19 @@ const DataPrise = () => {
     fullWidth: true,
     axisX: {
       labelInterpolationFnc: function(value) {
-        return value.split(':')[0] + 'h';  // Pour afficher les heures
+        return t('hour', { hour: value.split(':')[0] });  // Pour afficher les heures
       }
     },
     axisY: {
       labelInterpolationFnc: function(value) {
-        return value + ' Wh';  // Ajouter les unités Wh
+        return t('wh', { value });  // Ajouter les unités Wh
       }
     },
     plugins: [
       ChartistTooltip({
         appendToBody: true,
         transformTooltipTextFnc: function (value) {
-          return `${value} Wh`;
+          return t('wh', { value });
         }
       })
     ],
@@ -193,20 +196,13 @@ const DataPrise = () => {
       <Card.Header className="d-flex flex-row align-items-center flex-0">
         <div className="d-block">
           <h5 className="fw-normal mb-2">
-            Consommation Journalière
+            {t('dailyConsumptionFrigo')}
           </h5>
-          <h3>{totalConsommation} Wh</h3>
-          <small className="fw-bold mt-2">
-            <span className="me-2">Yesterday</span>
-            <FontAwesomeIcon icon={faAngleUp} className="text-success me-1" />
-            <span className="text-success">
-              +10%
-            </span>
-          </small>
+          <h3>{t('consumption', { totalConsumption: totalConsommation })}</h3>
         </div>
         <div className="d-flex ms-auto">
-          <Button onClick={() => changeDate(-1)}>Jour précédent</Button>
-          <Button onClick={() => changeDate(1)}>Jour suivant</Button>
+          <Button onClick={() => changeDate(-1)}>{t('previousDay')}</Button>
+          <Button onClick={() => changeDate(1)}>{t('nextDay')}</Button>
         </div>
       </Card.Header>
       <Card.Body className="p-2">
@@ -219,6 +215,7 @@ const DataPrise = () => {
               onChange={(e) => setDate(e.target.value)}
               className="form-control d-inline-block text-center"
               style={{ maxWidth: '200px' }}
+              aria-label={t('date')}
             />
           </div>
           <div className="mb-4 animate__animated animate__fadeIn">
@@ -232,11 +229,11 @@ const DataPrise = () => {
           <div className="d-flex justify-content-center my-3">
             <div className="d-flex align-items-center mx-3">
               <div style={{ width: '20px', height: '20px', backgroundColor: '#006400', marginRight: '10px' }}></div>
-              <span>Consommation précédente</span>
+              <span>{t('previousConsumption')}</span>
             </div>
             <div className="d-flex align-items-center mx-3">
               <div style={{ width: '20px', height: '20px', backgroundColor: '#00008B', marginRight: '10px' }}></div>
-              <span>Consommation actuelle</span>
+              <span>{t('currentConsumption')}</span>
             </div>
           </div>
         </div>

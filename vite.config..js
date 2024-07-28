@@ -19,7 +19,7 @@ export default {
         //changeOrigin: true,
        // rewrite: (path) => path.replace(/^\/api/, ''),
      // },
-      '/api': 'http://localhost:8080',
+      //'/api': 'http://localhost:8080',
       //'/api':'https://d2nhsdzuksq35j.cloudfront.net'
 
     },

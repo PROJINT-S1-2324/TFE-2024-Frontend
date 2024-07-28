@@ -90,7 +90,7 @@ export default () => (
     <RouteWithLoader exact path={Routes.Signin.path} component={Signin} />
     <RouteWithLoader exact path={Routes.NotFound.path} component={NotFoundPage} />
     <RouteWithLoader exact path={Routes.ServerError.path} component={ServerError} />
-
+    <AuthGuard>
   
     <RouteWithSidebar exact path={Routes.Boilier.path} component={Boilier} />
     <RouteWithSidebar exact path={Routes.TabBoilier.path} component={TabBoilier} />
@@ -102,7 +102,7 @@ export default () => (
     <RouteWithSidebar exact path={Routes.Asset.path} component={Asset} />
     <RouteWithSidebar exact path={Routes.User.path} component={User} />
     <RouteWithSidebar exact path={Routes.ChangePassWord.path} component={ChangePassWord} />
-    <AuthGuard>
+   
      </AuthGuard>
     <Redirect to={Routes.NotFound.path} />
 

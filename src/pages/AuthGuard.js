@@ -1,19 +1,16 @@
-import React, { useEffect } from 'react';
-import { useHistory } from "react-router-dom";
+import React from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Route, Redirect } from 'react-router-dom';
 import { Routes } from "../routes";
 
 const AuthGuard = ({ children }) => {
-    const history = useHistory();
+  const { isAuthenticated, isLoading } = useAuth0();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            history.push(Routes.Login.path);
-        }
-    }, [history]);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-    return children;
+  return isAuthenticated ? children : <Redirect to={Routes.Login.path} />;
 };
 
 export default AuthGuard;
-//

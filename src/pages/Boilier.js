@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ChartistGraph from 'react-chartist';
-import Chartist from 'chartist';  // Importer Chartist
+import Chartist from 'chartist';
 import 'chartist/dist/chartist.css';
 import 'chartist-plugin-tooltips-updated/dist/chartist-plugin-tooltip.css';
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Importer Bootstrap
-import 'animate.css/animate.min.css'; // Importer Animate.css
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'animate.css/animate.min.css';
 import { Card, Button, Col, Row } from '@themesberg/react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import { useTranslation } from 'react-i18next';
 
 const Boilier = () => {
+  const { t } = useTranslation();
+
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -18,15 +21,15 @@ const Boilier = () => {
 
   const [donneesLocales, setDonneesLocales] = useState([]);
   const [donneesPrecedentes, setDonneesPrecedentes] = useState([]);
-  const [date, setDate] = useState(getCurrentDate()); // Utiliser la date actuelle par défaut
-  const [totalConsommation, setTotalConsommation] = useState(0); // État pour la consommation totale
-  const dateInputRef = useRef(null); // Ref pour le champ de date
+  const [date, setDate] = useState(getCurrentDate());
+  const [totalConsommation, setTotalConsommation] = useState(0);
+  const dateInputRef = useRef(null);
 
   const fetchData = async (selectedDate) => {
     try {
       const response = await fetch(`http://20.123.48.27:8080/boil/data/energy/hourly?date=${selectedDate}`);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('La réponse du réseau n\'était pas correcte');
       }
       const data = await response.json();
 
@@ -60,11 +63,10 @@ const Boilier = () => {
 
       const response = await fetch(`http://20.123.48.27:8080/boil/data/energy/hourly?date=${previousDateString}`);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('La réponse du réseau n\'était pas correcte');
       }
       const data = await response.json();
 
-      // Filtrer les données pour ne garder que les heures entre 18h et 23h59
       const newData = data.filter(item => {
         const hour = parseInt(item.hour.split(':')[0], 10);
         return hour >= 18 || hour === 0;
@@ -94,9 +96,9 @@ const Boilier = () => {
 
     const intervalId = setInterval(() => {
       fetchAndSetData();
-    }, 60000); // 60000ms = 1 minute
+    }, 60000);
 
-    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [date]);
 
   const changeDate = (days) => {
@@ -112,11 +114,9 @@ const Boilier = () => {
     }
   };
 
-  // Transformer les données en un format utilisable par Chartist
-  const labels = donneesLocales.map(item => item.hour.split(' ')[1]); // Extrait l'heure
-  const previousLabels = donneesPrecedentes.map(item => item.hour.split(' ')[1]); // Extrait l'heure pour les données précédentes
+  const labels = donneesLocales.map(item => item.hour.split(' ')[1]);
+  const previousLabels = donneesPrecedentes.map(item => item.hour.split(' ')[1]);
 
-  // Assurez-vous que les labels de consommation précédente sont alignés avec les labels actuels
   const combinedLabels = [...new Set([...previousLabels, ...labels])];
   combinedLabels.sort((a, b) => parseInt(a.split(':')[0], 10) - parseInt(b.split(':')[0], 10));
 
@@ -142,12 +142,12 @@ const Boilier = () => {
     fullWidth: true,
     axisX: {
       labelInterpolationFnc: function(value) {
-        return value.split(':')[0] + 'h';  // Pour afficher les heures
+        return value.split(':')[0] + 'h';
       }
     },
     axisY: {
       labelInterpolationFnc: function(value) {
-        return value + ' Wh';  // Ajouter les unités Wh
+        return value + ' Wh';
       }
     },
     plugins: [
@@ -172,7 +172,7 @@ const Boilier = () => {
           area: 'ct-series-a-area'
         },
         styles: {
-          'stroke': '#006400', // Couleur verte foncée pour la consommation précédente
+          'stroke': '#006400',
           'stroke-width': '2px'
         }
       },
@@ -188,7 +188,7 @@ const Boilier = () => {
           area: 'ct-series-b-area'
         },
         styles: {
-          'stroke': '#00008B', // Couleur bleue foncée pour la consommation actuelle
+          'stroke': '#00008B',
           'stroke-width': '2px'
         }
       }
@@ -200,20 +200,13 @@ const Boilier = () => {
       <Card.Header className="d-flex flex-row align-items-center flex-0">
         <div className="d-block">
           <h5 className="fw-normal mb-2">
-            Consommation Journalière
+            {t('dailyConsumptionBoiler')}
           </h5>
-          <h3>{totalConsommation} Wh</h3>
-          <small className="fw-bold mt-2">
-            <span className="me-2">Yesterday</span>
-            <FontAwesomeIcon icon={faAngleUp} className="text-success me-1" />
-            <span className="text-success">
-              +10%
-            </span>
-          </small>
+          <h3>{t('consumption', { totalConsumption: totalConsommation })}</h3>
         </div>
         <div className="d-flex ms-auto">
-          <Button onClick={() => changeDate(-1)}>Jour précédent</Button>
-          <Button onClick={() => changeDate(1)}>Jour suivant</Button>
+          <Button onClick={() => changeDate(-1)}>{t('previousDay')}</Button>
+          <Button onClick={() => changeDate(1)}>{t('nextDay')}</Button>
         </div>
       </Card.Header>
       <Card.Body className="p-2">
@@ -232,18 +225,18 @@ const Boilier = () => {
             <ChartistGraph 
               data={data} 
               options={options} 
-              type="Bar" // Changer le type de graphique à "Bar"
+              type="Bar"
               className="ct-double-octave chart"
             />
           </div>
           <div className="d-flex justify-content-center my-3">
             <div className="d-flex align-items-center mx-3">
               <div style={{ width: '20px', height: '20px', backgroundColor: '#006400', marginRight: '10px' }}></div>
-              <span>Consommation précédente</span>
+              <span>{t('previousConsumption')}</span>
             </div>
             <div className="d-flex align-items-center mx-3">
               <div style={{ width: '20px', height: '20px', backgroundColor: '#00008B', marginRight: '10px' }}></div>
-              <span>Consommation actuelle</span>
+              <span>{t('currentConsumption')}</span>
             </div>
           </div>
         </div>

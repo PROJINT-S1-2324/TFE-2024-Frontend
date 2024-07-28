@@ -1,16 +1,26 @@
 {
-  "name": "Ma Progressive Web App",
+  "name": "IOT-HOME-DURAND",
   "short_name": "PWA",
-  "start_url": "index.html",
+  "start_url": "/?utm_source=a2hs",
   "display": "standalone",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "icons": [
     {
-      "src": "téléchargement.png",
-      "sizes": "225x225",
+      "src": "orh6hl9y.png",
+      "sizes": "612x612",
       "type": "image/png"
     }
+  ],
+  "screenshots": [
+    {
+      
+      "src": "orh6hl9y.png",
+      "sizes": "612x612",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
   ]
+
 
 }

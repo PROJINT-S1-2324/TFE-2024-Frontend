@@ -3,13 +3,12 @@ import { useHistory } from "react-router-dom";
 import { Routes } from "../routes";
 import LanguageSelector from "../pages/LanguageSelector";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faSignOutAlt, faChartPie, faCog,faCircle } from "@fortawesome/free-solid-svg-icons"; 
-
+import { faSignOutAlt, faChartPie, faCog, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { Form, InputGroup, Navbar, Nav, Container, Dropdown } from '@themesberg/react-bootstrap';
-
-import Profile3 from "../assets/img/team/profile-picture-3.jpg";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default (props) => {
+  const { logout } = useAuth0();
   const history = useHistory();
 
   const UseProfil = () => {
@@ -20,9 +19,9 @@ export default (props) => {
     history.push(Routes.ChangePassWord.path);
   };
 
-  const logout = () => {
+  const handleLogout = () => {
     localStorage.clear();
-    history.push(Routes.Login.path);
+    logout({ returnTo: window.location.origin });
   };
 
   return (
@@ -33,33 +32,32 @@ export default (props) => {
             <Form className="navbar-search">
               <Form.Group id="topbarSearch">
                 <InputGroup className="input-group-merge search-bar">
-                
-                  
+                  {/* Search bar content */}
                 </InputGroup>
               </Form.Group>
             </Form>
           </div>
           <Nav className="align-items-center">
             <Dropdown as={Nav.Item}>
-            <Dropdown.Toggle as={Nav.Link} className="pt-1 px-0">
-      <div className="media d-flex align-items-center">
-        <FontAwesomeIcon icon={faCircle} className="text-black me-2" size="3x" /> {/* Définissez la taille comme "lg" pour agrandir l'icône */}
-        <div className="media-body text-dark align-items-center d-none d-lg-block">
-        <span className="mb-0 font-small fw-bold"><LanguageSelector/> </span>
-          <span className="mb-0 font-small fw-bold"> {localStorage.getItem("lastName")} {localStorage.getItem("firstName")}</span>
-        </div>
-      </div>
-    </Dropdown.Toggle>
+              <Dropdown.Toggle as={Nav.Link} className="pt-1 px-0">
+                <div className="media d-flex align-items-center">
+                  <FontAwesomeIcon icon={faCircle} className="text-black me-2" size="3x" />
+                  <div className="media-body text-dark align-items-center d-none d-lg-block">
+                    <span className="mb-0 font-small fw-bold"><LanguageSelector /> </span>
+                    <span className="mb-0 font-small fw-bold"> {localStorage.getItem("lastName")} {localStorage.getItem("firstName")}</span>
+                  </div>
+                </div>
+              </Dropdown.Toggle>
               <Dropdown.Menu className="user-dropdown dropdown-menu-right mt-2">
                 <Dropdown.Item className="fw-bold" onClick={UseProfil}>
-                  <FontAwesomeIcon icon={faChartPie} className="text-danger me-2" /> My Profil
+                  <FontAwesomeIcon icon={faChartPie} className="text-danger me-2" /> Mon Profil
                 </Dropdown.Item>
                 <Dropdown.Item className="fw-bold" onClick={ChangePassWord}>
-                  <FontAwesomeIcon icon={faCog} className="text-danger me-2" /> Reset Password
+                  <FontAwesomeIcon icon={faCog} className="text-danger me-2" /> Réinitialiser le mot de passe
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item className="fw-bold" onClick={logout}>
-                  <FontAwesomeIcon icon={faSignOutAlt} className="text-danger me-2" /> Logout
+                <Dropdown.Item className="fw-bold" onClick={handleLogout}>
+                  <FontAwesomeIcon icon={faSignOutAlt} className="text-danger me-2" /> Déconnexion
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

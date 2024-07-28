@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Button, Image, Card } from 'react-bootstrap';
+
 import reactMockup from '../assets/img/shelly1.jpg'; // Première image
 import secondMockup from '../assets/img/Shelly2.jpg'; // Deuxième image
 
@@ -78,54 +80,54 @@ const Assets = () => {
     };
 
     const handlePrev = () => {
-        setCurrentImage((prevImage) => (prevImage === 1 ? 0 : 0));
+        setCurrentImage((prevImage) => (prevImage === 1 ? 0 : 1));
     };
 
-    const images = [reactMockup, secondMockup];
-
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
-            <div style={{ flex: 1, textAlign: 'center' }}>
-                <img 
-                    src={images[currentImage]} 
-                    alt="Device" 
-                    style={{ width: '100%', maxWidth: '300px', margin: 'auto' }} 
-                />
-                <div style={{ marginTop: '20px' }}>
-                    <button onClick={handlePrev} style={{ marginRight: '10px' }}>Précédent</button>
-                    <button onClick={handleNext}>Suivant</button>
-                </div>
-            </div>
-            <div style={{ flex: 1, textAlign: 'left', padding: '20px' }}>
-                {currentImage === 0 && deviceInfo1 && (
-                    <div>
-                        <p><strong>Id: </strong>{deviceInfo1.device_status.id}</p>
-                        <p><strong>Status: </strong>{deviceInfo1.online ? 'Online' : 'Offline'}</p>
-                        <p><strong>MAC Address: </strong>{deviceInfo1.device_status.sys.mac}</p>
-                        <p><strong>IP Address: </strong>{deviceInfo1.device_status.wifi.sta_ip}</p>
-                        <p><strong>SSID: </strong>{deviceInfo1.device_status.wifi.ssid}</p>
-                        <p><strong>Signal Strength (RSSI): </strong>{deviceInfo1.device_status.wifi.rssi}</p>
-                        <p><strong>Uptime: </strong>{formatUptime(deviceInfo1.device_status.sys.uptime)}</p>
-                        <p><strong>Firmware Version: </strong>{deviceInfo1.device_status.sys.available_updates.stable.version}</p>
+        <Container fluid className="py-4">
+            <Row className="justify-content-center align-items-center">
+                <Col xs={12} lg={6} className="text-center mb-4">
+                    <Image src={currentImage === 0 ? reactMockup : secondMockup} fluid style={{ maxWidth: '100%', height: 'auto' }} />
+                </Col>
+                <Col xs={12} lg={6}>
+                    <Card border="light" className="bg-white shadow-sm mb-4">
+                        <Card.Body>
+                            {currentImage === 0 && deviceInfo1 && (
+                                <div>
+                                    <p><strong>Id: </strong>{deviceInfo1.device_status.id}</p>
+                                    <p><strong>Status: </strong>{deviceInfo1.online ? 'Online' : 'Offline'}</p>
+                                    <p><strong>MAC Address: </strong>{deviceInfo1.device_status.sys.mac}</p>
+                                    <p><strong>IP Address: </strong>{deviceInfo1.device_status.wifi.sta_ip}</p>
+                                    <p><strong>SSID: </strong>{deviceInfo1.device_status.wifi.ssid}</p>
+                                    <p><strong>Signal Strength (RSSI): </strong>{deviceInfo1.device_status.wifi.rssi}</p>
+                                    <p><strong>Uptime: </strong>{formatUptime(deviceInfo1.device_status.sys.uptime)}</p>
+                                    <p><strong>Firmware Version: </strong>{deviceInfo1.device_status.sys.available_updates.stable.version}</p>
+                                </div>
+                            )}
+                            {currentImage === 1 && deviceInfo2 && (
+                                <div>
+                                    <p><strong>Id: </strong>{deviceInfo2.device_status.id}</p>
+                                    <p><strong>Status: </strong>{deviceInfo2.online ? 'Online' : 'Offline'}</p>
+                                    <p><strong>MAC Address: </strong>{deviceInfo2.device_status.sys.mac}</p>
+                                    <p><strong>IP Address: </strong>{deviceInfo2.device_status.wifi.sta_ip}</p>
+                                    <p><strong>SSID: </strong>{deviceInfo2.device_status.wifi.ssid}</p>
+                                    <p><strong>Signal Strength (RSSI): </strong>{deviceInfo2.device_status.wifi.rssi}</p>
+                                    <p><strong>Uptime: </strong>{formatUptime(deviceInfo2.device_status.sys.uptime)}</p>
+                                    <p><strong>Firmware Version: </strong>{deviceInfo2.device_status.sys.available_updates.stable.version}</p>
+                                </div>
+                            )}
+                            {((currentImage === 0 && !deviceInfo1) || (currentImage === 1 && !deviceInfo2)) && (
+                                <p>Chargement des informations de l'appareil...</p>
+                            )}
+                        </Card.Body>
+                    </Card>
+                    <div className="text-center">
+                        <Button variant="info" onClick={handlePrev} className="me-2">Précédent</Button>
+                        <Button variant="info" onClick={handleNext}>Suivant</Button>
                     </div>
-                )}
-                {currentImage === 1 && deviceInfo2 && (
-                    <div>
-                        <p><strong>Id: </strong>{deviceInfo2.device_status.id}</p>
-                        <p><strong>Status: </strong>{deviceInfo2.online ? 'Online' : 'Offline'}</p>
-                        <p><strong>MAC Address: </strong>{deviceInfo2.device_status.sys.mac}</p>
-                        <p><strong>IP Address: </strong>{deviceInfo2.device_status.wifi.sta_ip}</p>
-                        <p><strong>SSID: </strong>{deviceInfo2.device_status.wifi.ssid}</p>
-                        <p><strong>Signal Strength (RSSI): </strong>{deviceInfo2.device_status.wifi.rssi}</p>
-                        <p><strong>Uptime: </strong>{formatUptime(deviceInfo2.device_status.sys.uptime)}</p>
-                        <p><strong>Firmware Version: </strong>{deviceInfo2.device_status.sys.available_updates.stable.version}</p>
-                    </div>
-                )}
-                {((currentImage === 0 && !deviceInfo1) || (currentImage === 1 && !deviceInfo2)) && (
-                    <p>Loading device info...</p>
-                )}
-            </div>
-        </div>
+                </Col>
+            </Row>
+        </Container>
     );
 };
 
