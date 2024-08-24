@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'animate.css/animate.min.css'; // Importer Animate.css
-
+import 'animate.css/animate.min.css';
+import { useTranslation } from 'react-i18next';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 const TabBoilier = () => {
+  const { t } = useTranslation();
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -16,7 +18,6 @@ const TabBoilier = () => {
 
   const fetchData = async (selectedDate) => {
     if (!navigator.onLine) {
-      // Use local storage data if offline
       const localData = localStorage.getItem(`boilierData-${selectedDate}`);
       const localTotal = localStorage.getItem(`boilierTotal-${selectedDate}`);
       if (localData && localTotal) {
@@ -42,14 +43,12 @@ const TabBoilier = () => {
 
       setTotalConsommation(total);
       setDonneesLocales(newData);
-      setCurrentPage(0); // Reset to the first page whenever data is fetched
+      setCurrentPage(0);
 
-      // Store data in localStorage
       localStorage.setItem(`boilierData-${selectedDate}`, JSON.stringify(newData));
       localStorage.setItem(`boilierTotal-${selectedDate}`, total.toString());
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
-      // Use local storage data in case of error
       const localData = localStorage.getItem(`boilierData-${selectedDate}`);
       const localTotal = localStorage.getItem(`boilierTotal-${selectedDate}`);
       if (localData && localTotal) {
@@ -76,33 +75,43 @@ const TabBoilier = () => {
     }
   };
 
-  const itemsPerPage = 8; // Number of items per page
+  const itemsPerPage = 8;
   const totalPages = Math.ceil(donneesLocales.length / itemsPerPage);
 
   const paginatedData = donneesLocales.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
   return (
     <div className="container">
-      <h1 className="text-center my-4 animate__animated animate__fadeInDown">Consommation Journalière</h1>
-      <div className="mb-4 text-center animate__animated animate__fadeIn">
-        <button className="btn btn-primary mx-2" onClick={() => changeDate(-1)}>&lt; Jour précédent</button>
-        <input
-          ref={dateInputRef}
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="form-control d-inline-block text-center"
-          style={{ maxWidth: '200px' }}
-        />
-        <button className="btn btn-primary mx-2" onClick={() => changeDate(1)}>Jour suivant &gt;</button>
-      </div>
+       <Row className="justify-content-md-center">
+        <Col xs={12} className="mb-4">
+          <div className="widget bg-primary text-white shadow-sm rounded p-4">
+            <h1 className="text-center my-4 animate__animated animate__fadeInDown">{t('dailyConsumption')}</h1>
+            <div className="mb-4 text-center animate__animated animate__fadeIn">
+              <button className="btn btn-light mx-2" onClick={() => changeDate(-1)}>
+                &lt; {t('previousDay')}
+              </button>
+              <input
+                ref={dateInputRef}
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="form-control d-inline-block text-center"
+                style={{ maxWidth: '200px' }}
+              />
+              <button className="btn btn-light mx-2" onClick={() => changeDate(1)}>
+                {t('nextDay')} &gt;
+              </button>
+            </div>
+          </div>
+        </Col>
+      </Row>
       
       <div className="table-responsive animate__animated animate__fadeIn">
         <table className="table table-striped table-bordered table-hover">
           <thead className="thead-dark">
             <tr>
-              <th>Heure</th>
-              <th>Consommation (Wh)</th>
+              <th>{t('hour')}</th>
+              <th>{t('consumptionWh')}</th>
             </tr>
           </thead>
           <tbody>
@@ -113,7 +122,7 @@ const TabBoilier = () => {
               </tr>
             ))}
             <tr>
-              <td><strong>Total</strong></td>
+              <td><strong>{t('total')}</strong></td>
               <td><strong>{totalConsommation} Wh</strong></td>
             </tr>
           </tbody>
@@ -125,14 +134,14 @@ const TabBoilier = () => {
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 0}
         >
-          Précédent
+          {t('previous')}
         </button>
         <button
           className="btn btn-dark mx-1"
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={currentPage >= totalPages - 1}
         >
-          Suivant
+          {t('next')}
         </button>
       </div>
     </div>

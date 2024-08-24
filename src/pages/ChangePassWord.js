@@ -3,8 +3,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUnlockAlt } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row, Form, Button, Container, InputGroup } from '@themesberg/react-bootstrap';
+import { useTranslation } from "react-i18next";
 
 export default () => {
+  const { t } = useTranslation();
   const { user } = useAuth0();
   const [email, setEmail] = useState(user ? user.email : '');
   const [successMessage, setSuccessMessage] = useState('');
@@ -31,11 +33,11 @@ export default () => {
         throw new Error('Failed to request password change');
       }
 
-      setSuccessMessage('Un email de réinitialisation du mot de passe a été envoyé !');
+      setSuccessMessage(t('passwordResetEmailSent'));
       setErrorMessage('');
     } catch (error) {
       console.error('Error requesting password change:', error);
-      setErrorMessage('Échec de la demande de changement de mot de passe. Veuillez réessayer.');
+      setErrorMessage(t('passwordChangeRequestFailed'));
       setSuccessMessage('');
     }
   };
@@ -47,10 +49,10 @@ export default () => {
           <Row className="justify-content-center">
             <Col xs={12} className="d-flex align-items-center justify-content-center">
               <div className="bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
-                <h3 className="mb-4">Demander un changement de mot de passe</h3>
+                <h3 className="mb-4">{t('requestPasswordChange')}</h3>
                 <Form onSubmit={handleChangePassword}>
                   <Form.Group id="email" className="mb-4">
-                    <Form.Label>Votre Email</Form.Label>
+                    <Form.Label>{t('yourEmail')}</Form.Label>
                     <InputGroup>
                       <InputGroup.Text>
                         <FontAwesomeIcon icon={faUnlockAlt} />
@@ -65,7 +67,7 @@ export default () => {
                     </InputGroup>
                   </Form.Group>
                   <Button variant="primary" type="submit" className="w-100">
-                    Demander un changement de mot de passe
+                    {t('requestPasswordChange')}
                   </Button>
                   {errorMessage && <p className="text-danger mt-3">{errorMessage}</p>}
                   {successMessage && <p className="text-success mt-3">{successMessage}</p>}

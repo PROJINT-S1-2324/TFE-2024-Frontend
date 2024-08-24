@@ -6,9 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt, faChartPie, faCog, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { Form, InputGroup, Navbar, Nav, Container, Dropdown } from '@themesberg/react-bootstrap';
 import { useAuth0 } from "@auth0/auth0-react";
+import { useTranslation } from "react-i18next";
 
 export default (props) => {
   const { logout } = useAuth0();
+  const { t } = useTranslation();
   const history = useHistory();
 
   const UseProfil = () => {
@@ -32,7 +34,7 @@ export default (props) => {
             <Form className="navbar-search">
               <Form.Group id="topbarSearch">
                 <InputGroup className="input-group-merge search-bar">
-                  {/* Search bar content */}
+                  {/* Contenu de la barre de recherche */}
                 </InputGroup>
               </Form.Group>
             </Form>
@@ -43,24 +45,25 @@ export default (props) => {
                 <div className="media d-flex align-items-center">
                   <FontAwesomeIcon icon={faCircle} className="text-black me-2" size="3x" />
                   <div className="media-body text-dark align-items-center d-none d-lg-block">
-                    <span className="mb-0 font-small fw-bold"><LanguageSelector /> </span>
+                   
                     <span className="mb-0 font-small fw-bold"> {localStorage.getItem("lastName")} {localStorage.getItem("firstName")}</span>
                   </div>
                 </div>
               </Dropdown.Toggle>
               <Dropdown.Menu className="user-dropdown dropdown-menu-right mt-2">
                 <Dropdown.Item className="fw-bold" onClick={UseProfil}>
-                  <FontAwesomeIcon icon={faChartPie} className="text-danger me-2" /> Mon Profil
+                  <FontAwesomeIcon icon={faChartPie} className="text-danger me-2" /> {t('myProfile')}
                 </Dropdown.Item>
                 <Dropdown.Item className="fw-bold" onClick={ChangePassWord}>
-                  <FontAwesomeIcon icon={faCog} className="text-danger me-2" /> Réinitialiser le mot de passe
+                  <FontAwesomeIcon icon={faCog} className="text-danger me-2" /> {t('resetPassword')}
                 </Dropdown.Item>
                 <Dropdown.Divider />
                 <Dropdown.Item className="fw-bold" onClick={handleLogout}>
-                  <FontAwesomeIcon icon={faSignOutAlt} className="text-danger me-2" /> Déconnexion
+                  <FontAwesomeIcon icon={faSignOutAlt} className="text-danger me-2" /> {t('logout')}
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
+            <span className="mb-0 font-small fw-bold"><LanguageSelector /> </span>
           </Nav>
         </div>
       </Container>

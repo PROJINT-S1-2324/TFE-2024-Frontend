@@ -88,13 +88,13 @@ export const GeneralInfoForm = () => {
 
   return (
     <Container fluid className="py-4">
-      <h1 className="mb-4">Informations générales de l'utilisateur</h1>
+      <h1 className="mb-4">{t('generalUserInfo')}</h1>
       <Card border="light" className="bg-white shadow-sm mb-4">
         <Card.Body>
           <Form>
             <Row className="mb-3">
               <Form.Group as={Col} sm={6}>
-                <Form.Label>{t("Prénom :")}</Form.Label>
+                <Form.Label>{t("firstName")}</Form.Label>
                 <Form.Control
                   type="text"
                   name="firstName"
@@ -105,7 +105,7 @@ export const GeneralInfoForm = () => {
                 />
               </Form.Group>
               <Form.Group as={Col} sm={6}>
-                <Form.Label>{t("Nom :")}</Form.Label>
+                <Form.Label>{t("lastName")}</Form.Label>
                 <Form.Control
                   type="text"
                   name="lastName"
@@ -118,7 +118,7 @@ export const GeneralInfoForm = () => {
             </Row>
             <Row className="mb-3">
               <Form.Group as={Col} sm={6}>
-                <Form.Label>{t("Adresse :")}</Form.Label>
+                <Form.Label>{t("address")}</Form.Label>
                 <Form.Control
                   type="text"
                   name="address"
@@ -129,7 +129,7 @@ export const GeneralInfoForm = () => {
                 />
               </Form.Group>
               <Form.Group as={Col} sm={6}>
-                <Form.Label>{t("Numéro de téléphone :")}</Form.Label>
+                <Form.Label>{t("phoneNumber")}</Form.Label>
                 <Form.Control
                   type="text"
                   name="phoneNumber"
@@ -141,7 +141,7 @@ export const GeneralInfoForm = () => {
               </Form.Group>
             </Row>
             <Form.Group className="mb-3">
-              <Form.Label>{t("Email :")}</Form.Label>
+              <Form.Label>{t("email")}</Form.Label>
               <Form.Control
                 type="text"
                 name="email"
@@ -155,15 +155,15 @@ export const GeneralInfoForm = () => {
             <div className="mt-3 d-flex justify-content-end">
               {editing ? (
                 <Button onClick={handleSave} variant="primary" className="me-2">
-                  Enregistrer
+                  {t('save')}
                 </Button>
               ) : (
                 <Button onClick={toggleEditing} variant="info" className="me-2">
-                  Modifier
+                  {t('edit')}
                 </Button>
               )}
               <Button onClick={() => window.location.reload()} variant="info">
-                Actualiser
+                {t('refresh')}
               </Button>
             </div>
             {errorMessage && <p className="text-danger mt-3">{errorMessage}</p>}

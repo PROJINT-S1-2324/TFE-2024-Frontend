@@ -138,7 +138,12 @@ const DataPrise = () => {
     fullWidth: true,
     axisX: {
       labelInterpolationFnc: function(value) {
-        return t('hour', { hour: value.split(':')[0] });  // Pour afficher les heures
+        return  value.split(':')[0] + 'h' ;
+      }
+    },
+    axisY: {
+      labelInterpolationFnc: function(value) {
+        return t('wh', { value });  // Ajouter les unités Wh
       }
     },
     axisY: {

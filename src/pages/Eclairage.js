@@ -31,7 +31,7 @@ const Eclairage = () => {
       const newData = data.map(item => {
         const { hour, consumption } = item;
         total += consumption;
-        return { hour, consumption };
+        return { hour: hour.split(' ')[1], consumption }; // Extraire uniquement l'heure
       });
 
       setTotalConsommation(total);
@@ -112,7 +112,7 @@ const Eclairage = () => {
                 <div className="chart-axis">
                   {donneesLocales.map((item, index) => (
                     <div key={index} className="chart-bar-wrapper">
-                      <span className="bar-hour">{t('hour', { hour: item.hour.split(' ')[1] })}</span>
+                      <span className="bar-hour">{item.hour}</span>
                       <div className="chart-bar" style={{ width: `${item.consumption * scaleFactor}px`, backgroundColor: colors[index % colors.length] }}>
                         <span className="bar-label">{t('wh', { value: item.consumption.toFixed(2) })}</span>
                       </div>

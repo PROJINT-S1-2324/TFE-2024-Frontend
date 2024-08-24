@@ -5,12 +5,14 @@ import 'chartist/dist/chartist.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'animate.css/animate.min.css';
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLightbulb, faPlug, faBurn, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { useTranslation } from 'react-i18next';
 import CounterWidget from './CounterWidget';
 import SalesValueWidget from './SalesValueWidget';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
+
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -214,18 +216,28 @@ const Dashboard = () => {
 
   return (
     <Container className="mt-4">
-      <Row className="my-4">
-        <Col className="text-center">
-          <h2 className="animate__animated animate__fadeInDown">Consommation Totale du Mois (kWh)</h2>
-          <Button className="mx-2" onClick={() => changeMonth(-1)}> Mois précédent</Button>
-          <Button className="mx-2" onClick={() => changeMonth(1)}>Mois suivant </Button>
-          <div><h2>{getMonthName(yearMonth)} : {monthlyTotal.toFixed(3)} kWh</h2> </div>
-        </Col>
-      </Row>
+      <Row className="justify-content-md-center">
+      <Col xs={12} className="mb-4">
+        <div className="widget bg-primary text-white shadow-sm rounded p-4">
+          <h2 className="animate__animated animate__fadeInDown text-center">{t('Consommation Totale du Mois (kWh)')}</h2>
+          <div className="d-flex justify-content-center my-3">
+            <Button className="mx-2" variant="light" onClick={() => changeMonth(-1)}>
+              {t('Mois précédent')}
+            </Button>
+            <Button className="mx-2" variant="light" onClick={() => changeMonth(1)}>
+              {t('Mois suivant')}
+            </Button>
+          </div>
+          <div className="text-center">
+            <h2>{getMonthName(yearMonth)} : {monthlyTotal.toFixed(3)} kWh</h2>
+          </div>
+        </div>
+      </Col>
+    </Row>
       <Row className="justify-content-md-center">
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <CounterWidget
-            category="Éclairage"
+            category={t('Éclairage')}
             title={`${componentConsumption.eclai.toFixed(3)} kWh`}
             percentage={calculatePercentage(componentConsumption.eclai).toFixed(2)}
             icon={faLightbulb}
@@ -234,7 +246,7 @@ const Dashboard = () => {
         </Col>
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <CounterWidget
-            category="Prise"
+            category={t('Prise')}
             title={`${componentConsumption.prise.toFixed(3)} kWh`}
             percentage={calculatePercentage(componentConsumption.prise).toFixed(2)}
             icon={faPlug}
@@ -243,7 +255,7 @@ const Dashboard = () => {
         </Col>
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <CounterWidget
-            category="Boiler"
+            category={t('Boiler')}
             title={`${componentConsumption.boilier.toFixed(3)} kWh`}
             percentage={calculatePercentage(componentConsumption.boilier).toFixed(2)}
             icon={faBurn}
@@ -254,7 +266,7 @@ const Dashboard = () => {
       <Row className="justify-content-md-center">
         <Col xs={12} className="mb-4">
           <SalesValueWidget
-            title="Consommation Totale du Mois"
+            title={t('Consommation Totale du Mois (kWh)')}
             value={`${monthlyTotal.toFixed(3)} kWh`}
             percentage={100}
             icon={faCalendarAlt}
@@ -265,8 +277,8 @@ const Dashboard = () => {
         <table className="table table-striped table-bordered table-hover">
           <thead className="thead-dark">
             <tr>
-              <th>Heure</th>
-              <th>Consommation (kWh)</th>
+              <th>{t('Heure')}</th>
+              <th>{t('Consommation (kWh)')}</th>
             </tr>
           </thead>
           <tbody>
@@ -277,7 +289,7 @@ const Dashboard = () => {
               </tr>
             ))}
             <tr>
-              <td><strong>Total</strong></td>
+              <td><strong>{t('Total')}</strong></td>
               <td><strong>{totalConsumption.toFixed(3)} kWh</strong></td>
             </tr>
           </tbody>
@@ -296,11 +308,7 @@ const Dashboard = () => {
           <div className="d-flex justify-content-center my-3">
             <div className="d-flex align-items-center mx-3">
               <div style={{ width: '20px', height: '20px', backgroundColor: '#006400', marginRight: '10px' }}></div>
-              <span>Consommation précédente</span>
-            </div>
-            <div className="d-flex align-items-center mx-3">
-              <div style={{ width: '20px', height: '20px', backgroundColor: '#00008B', marginRight: '10px' }}></div>
-              <span>Consommation actuelle</span>
+              <span>{t('Consommation actuelle')}</span>
             </div>
           </div>
         </div>
@@ -311,18 +319,17 @@ const Dashboard = () => {
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 0}
         >
-          Précédent
+          {t('Précédent')}
         </Button>
         <Button
           className="btn btn-dark mx-1"
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={currentPage >= totalPages - 1}
         >
-          Suivant
+          {t('Suivant')}
         </Button>
       </div>
     </Container>
   );
 };
-
 export default Dashboard;
