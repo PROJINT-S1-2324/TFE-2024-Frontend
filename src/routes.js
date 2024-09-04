@@ -23,6 +23,6 @@ export const Routes = {
     Boilier: {path: "/Boilier"},
     TabBoilier: {path: "/TabBoilier"},
 
-    
+    Coût: {path: "/Coût"},
 
 };

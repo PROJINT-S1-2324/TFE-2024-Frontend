@@ -57,6 +57,14 @@ const resources = {
       total: "Total",
       previous: "Previous",
       next: "Next",
+
+      "Consommation Mensuelle": "Monthly Consumption",
+  "Consommation totale par mois avec coût selon le fournisseur": "Total consumption per month with cost according to the provider",
+  "Sélectionnez votre fournisseur d'énergie": "Select your energy provider",
+  "Mois": "Month",
+  "Consommation": "Consumption",
+  "Coût": "Cost",
+  "Graphique des coûts mensuels": "Monthly Cost Chart",
     }
   },
   fr: {
@@ -115,6 +123,14 @@ const resources = {
       previous: "Précédent",
       next: "Suivant",
 
+      "Consommation Mensuelle": "Consommation Mensuelle",
+  "Consommation totale par mois avec coût selon le fournisseur": "Consommation totale par mois avec coût selon le fournisseur",
+  "Sélectionnez votre fournisseur d'énergie": "Sélectionnez votre fournisseur d'énergie",
+  "Mois": "Mois",
+  "Consommation": "Consommation",
+  "Coût": "Coût",
+  "Graphique des coûts mensuels": "Graphique des coûts mensuels",
+
     }
   },
   nl: {
@@ -172,6 +188,14 @@ const resources = {
       total: "Totaal",
       previous: "Vorige",
       next: "Volgende",
+
+      "Consommation Mensuelle": "Maandelijkse Verbruik",
+  "Consommation totale par mois avec coût selon le fournisseur": "Totale verbruik per maand met kosten volgens de leverancier",
+  "Sélectionnez votre fournisseur d'énergie": "Selecteer uw energieleverancier",
+  "Mois": "Maand",
+  "Consommation": "Verbruik",
+  "Coût": "Kosten",
+  "Graphique des coûts mensuels": "Maandelijkse Kosten Grafiek",
 
     }
   }

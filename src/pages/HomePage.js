@@ -22,6 +22,7 @@ import TabBoilier from "./TabBoilier";
 import Boilier from "./Boilier";
 
 
+import Coût from "./Coût";
 
 // components
 import Sidebar from "../components/Sidebar";
@@ -104,6 +105,8 @@ export default () => (
     <RouteWithSidebar exact path={Routes.ChangePassWord.path} component={ChangePassWord} />
     <RouteWithLoader exact path={Routes.NotFound.path} component={NotFoundPage} />
    
+    <RouteWithSidebar exact path={Routes.Coût.path} component={Coût} />
+    
      </AuthGuard>
     <Redirect to={Routes.NotFound.path} />
 

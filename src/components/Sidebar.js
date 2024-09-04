@@ -3,7 +3,7 @@ import SimpleBar from 'simplebar-react';
 import { useLocation } from "react-router-dom";
 import { CSSTransition } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faCogs, faHome, faTable, faSignOutAlt, faTimes, faChevronRight, faPlug, faChartLine, faLightbulb, faWater } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faCogs, faHome,faEuroSign, faTable, faDollarSign, faTimes, faChevronRight, faPlug, faChartLine, faLightbulb, faWater } from "@fortawesome/free-solid-svg-icons";
 import { Nav, Button, Dropdown, Navbar, Image, Badge } from '@themesberg/react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -87,8 +87,9 @@ export default (props = {}) => {
             <Nav className="flex-column pt-3 pt-md-0">
               <NavItem title="IOT FACTORY" icon={faCogs} />
               <NavItem title="Dashboard" icon={faHome} link={Routes.Dashboard.path} />
+              <NavItem title="Coût" icon={faEuroSign} link={Routes.Coût.path} />
               <NavItem title="Devices" icon={faBook} link={Routes.Asset.path} />
-              
+
               <Nav.Item onClick={() => setShowFrigo(!showFrigo)}>
                 <Nav.Link className="d-flex justify-content-between align-items-center bg-dark text-white border-0">
                   <span>
